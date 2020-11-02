@@ -11,4 +11,4 @@ finally:
     del get_distribution, DistributionNotFound
 
 from .ms_project import MSProject
-from .gitlab import Issue
+from .gitlab_issues import Issue

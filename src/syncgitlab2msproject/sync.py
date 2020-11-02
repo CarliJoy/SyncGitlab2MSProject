@@ -1,7 +1,7 @@
 from typing import List
 
 from . import MSProject
-from .gitlab import Issue
+from .gitlab_issues import Issue
 
 
 def sync_gitlab_issues_to_ms_project(ms_project: MSProject, issues: List[Issue]):

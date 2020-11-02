@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from syncgitlab2msproject.skeleton import fib
+from syncgitlab2msproject.cli import fib
 
 __author__ = "Carli"
 __copyright__ = "Carli"

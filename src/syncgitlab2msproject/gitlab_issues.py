@@ -3,7 +3,7 @@ from gitlab import Gitlab
 from datetime import datetime
 
 import dateutil.parser
-from .typing import GitlabIssue, GitlabUserDict
+from .custom_types import GitlabIssue, GitlabUserDict
 
 from .exceptions import MovedIssueNotDefined
 

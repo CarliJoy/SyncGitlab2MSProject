@@ -1,18 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is a skeleton file that can serve as a starting point for a Python
-console script. To run this script uncomment the following lines in the
-[options.entry_points] section in setup.cfg:
-
-    console_scripts =
-         fibonacci = syncgitlab2msproject.skeleton:run
-
-Then run `python setup.py install` which will install the command `fibonacci`
-inside your current environment.
-Besides console scripts, the header (i.e. until _logger...) of this file can
-also be used as template for Python modules.
-
-Note: This skeleton file can be safely removed if not needed!
+Handle the Command Line Interface
 """
 
 import argparse
@@ -25,23 +13,7 @@ __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "mit"
 
-_logger = logging.getLogger(__name__)
-
-
-def fib(n):
-    """Fibonacci example function
-
-    Args:
-      n (int): integer
-
-    Returns:
-      int: n-th Fibonacci number
-    """
-    assert n > 0
-    a, b = 1, 1
-    for i in range(n - 1):
-        a, b = b, a + b
-    return a
+_logger = logging.getLogger(f"{__package__}.{__name__}")
 
 
 def parse_args(args):
@@ -59,7 +31,7 @@ def parse_args(args):
         action="version",
         version="SyncGitlab2MSProject {ver}".format(ver=__version__),
     )
-    parser.add_argument(dest="n", help="n-th Fibonacci number", type=int, metavar="INT")
+
     parser.add_argument(
         "-v",
         "--verbose",
@@ -76,6 +48,40 @@ def parse_args(args):
         action="store_const",
         const=logging.DEBUG,
     )
+
+    # TODO read from ENV
+    parser.add_argument(
+        "--gitlab-url",
+        help="URL to the gitlab instance i.e. https://gitlab.your-company.com",
+        default="https://gitlab.com",
+        type=str,
+    )
+
+    # TODO read from ENV
+    parser.add_argument(
+        "--gitlab-token",
+        help="Gitlab personal access token",
+    )
+
+    parser.add_argument(
+        "gitlab-resource-type",
+        help="Gitlab resource type to sync with",
+        type=str,
+        choices=["project", "group"],
+    )
+
+    parser.add_argument(
+        "gitlab-resource-id",
+        help="Gitlab resource id to sync with",
+        type=int,
+    )
+
+    parser.add_argument(
+        dest="project_file",
+        help="Microsoft Project File to sync with",
+        type=str,
+    )
+
     return parser.parse_args(args)
 
 
@@ -100,13 +106,13 @@ def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
     _logger.debug("Starting crazy calculations...")
-    print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+
+    # print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
     _logger.info("Script ends here")
 
 
 def run():
-    """Entry point for console_scripts
-    """
+    """Entry point for console_scripts"""
     main(sys.argv[1:])
 
 
