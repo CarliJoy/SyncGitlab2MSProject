@@ -124,6 +124,12 @@ class Issue:
         return None
 
     @property
+    def due_date(self) -> Optional[datetime]:
+        if val := self.obj.due_date is not None:
+            return dateutil.parser.parse(val)
+        return None
+
+    @property
     def closed_by(self) -> Optional[str]:
         if val := self.obj.closed_by is not None:
             return get_user_identifier(val)
@@ -146,6 +152,10 @@ class Issue:
     @property
     def assignees(self) -> List[str]:
         return [get_user_identifier(user) for user in self.obj.assignees]
+
+    @property
+    def labels(self) -> List[str]:
+        return self.obj.labels
 
 
 def get_gitlab_class(server: str, personal_token: Optional[str] = None) -> Gitlab:

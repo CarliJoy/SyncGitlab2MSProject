@@ -143,20 +143,28 @@ class Task:
         self._get_task().Finish = value
 
     @property
-    def actual_start(self) -> datetime:
+    def actual_start(self) -> Optional[datetime]:
         return na_win2py_datetime(self._get_task().ActualStart)
 
     @actual_start.setter
-    def actual_start(self, value: datetime):
+    def actual_start(self, value: Optional[datetime]):
         self._get_task().ActualStart = na_py2win_datetime(value)
 
     @property
-    def actual_finish(self) -> datetime:
+    def actual_finish(self) -> Optional[datetime]:
         return na_win2py_datetime(self._get_task().ActualFinish)
 
     @actual_finish.setter
-    def actual_finish(self, value: datetime):
+    def actual_finish(self, value: Optional[datetime]):
         self._get_task().ActualFinish = na_py2win_datetime(value)
+
+    @property
+    def deadline(self) -> Optional[datetime]:
+        return na_win2py_datetime(self._get_task().Deadline)
+
+    @deadline.setter
+    def deadline(self, value: Optional[datetime]):
+        self._get_task().Deadline = na_py2win_datetime(value)
 
     @property
     def notes(self) -> str:
