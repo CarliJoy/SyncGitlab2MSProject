@@ -6,12 +6,16 @@ Handle the Command Line Interface
 import argparse
 import sys
 import logging
+from pathlib import Path
 
+from requests import ConnectionError
 from syncgitlab2msproject import __version__
 
 __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "mit"
+
+from syncgitlab2msproject.gitlab_issues import get_project_issues, get_gitlab_class, get_group_issues
 
 _logger = logging.getLogger(f"{__package__}.{__name__}")
 
@@ -52,6 +56,7 @@ def parse_args(args):
     # TODO read from ENV
     parser.add_argument(
         "--gitlab-url",
+        dest="gitlab_url",
         help="URL to the gitlab instance i.e. https://gitlab.your-company.com",
         default="https://gitlab.com",
         type=str,
@@ -60,18 +65,20 @@ def parse_args(args):
     # TODO read from ENV
     parser.add_argument(
         "--gitlab-token",
+        dest="gitlab_token",
         help="Gitlab personal access token",
+        default=None
     )
 
     parser.add_argument(
-        "gitlab-resource-type",
+        "gitlab_resource_type",
         help="Gitlab resource type to sync with",
         type=str,
         choices=["project", "group"],
     )
 
     parser.add_argument(
-        "gitlab-resource-id",
+        "gitlab_resource_id",
         help="Gitlab resource id to sync with",
         type=int,
     )
@@ -91,7 +98,8 @@ def setup_logging(loglevel):
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
-    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    # we are not as complicated as that we need %(name)s:
+    logformat = "[%(asctime)s] %(levelname)s: %(message)s"
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
     )
@@ -105,9 +113,28 @@ def main(args):
     """
     args = parse_args(args)
     setup_logging(args.loglevel)
-    _logger.debug("Starting crazy calculations...")
+    ms_project_file = Path(args.project_file)
+    if not ms_project_file.is_file():
+        _logger.error(
+           f"Could not open '{args.project_file}' - seems not to be a valid file."
+        )
+        exit(128)
+    _logger.debug("Starting loading issues")
 
-    # print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+    gitlab = get_gitlab_class(args.gitlab_url, args.gitlab_token)
+
+    if args.gitlab_resource_type == "project":
+        get_issues_func = get_project_issues
+    elif args.gitlab_resource_type == "group":
+        get_issues_func = get_group_issues
+    else:
+        raise ValueError("Invalid Resource Type")
+
+    try:
+        issues = get_issues_func(gitlab, args.gitlab_resource_id)
+    except ConnectionError as e:
+        _logger.error(f"Error contacting gitlab instance: {e}")
+
     _logger.info("Script ends here")
 
 

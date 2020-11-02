@@ -46,7 +46,7 @@ def na_win2py_datetime(win32datetime: "pywintypes.datetime") -> Optional[datetim
 
 def na_py2win_datetime(dt: Optional[datetime]) -> Union[datetime, str]:
     """
-    Convert nullable datetype for usage in MS Project   
+    Convert nullable datetype for usage in MS Project
     """
     if dt is None:
         return "NA"
@@ -177,7 +177,7 @@ class Task:
     @property
     def duration(self) -> Optional[int]:
         """Gets  the duration (in minutes) of a task.
-         Read-only for summary tasks. Read/write Variant."""
+        Read-only for summary tasks. Read/write Variant."""
         return self._get_task().duration
 
     @duration.setter

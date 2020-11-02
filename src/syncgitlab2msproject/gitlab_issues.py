@@ -168,3 +168,8 @@ def get_gitlab_class(server: str, personal_token: Optional[str] = None) -> Gitla
 def get_group_issues(gitlab: Gitlab, group_id: int) -> List[Issue]:
     group = gitlab.groups.get(group_id, lazy=True)
     return [Issue(issue) for issue in group.issues.list(all=True)]
+
+
+def get_project_issues(gitlab: Gitlab, project_id: int) -> List[Issue]:
+    project = gitlab.projects.get(project_id, lazy=True)
+    return [Issue(issue) for issue in project.issues.list(all=True)]
