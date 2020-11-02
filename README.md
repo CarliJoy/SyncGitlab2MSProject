@@ -1,12 +1,22 @@
 # SyncGitlab2MSProject
 
-Add a short description here!
+Sync Gitlab Issues with a Microsoft Project File.
+Use it if you use MS Project for the general project planning but want to keep
+the Issues in Gitlab as a part of project planning to follow the process.
 
+Currently only Information from Gitlab Issues are inserted and updated within the
+Project File. Changes in synchronised fields will be overwritten.
 
-## Description
+The following MS Project attributes are synched from gitlab:
+  - Name
+  - Notes (from Description)
+  - Deadline (from Due Date)
 
-A longer description of your project goes here...
+Not yet implemented but planned
+  - ...
 
+## Requirements
+This project runs only in an Windows Environment with Microsoft Project installed.
 
 ## Note
 
