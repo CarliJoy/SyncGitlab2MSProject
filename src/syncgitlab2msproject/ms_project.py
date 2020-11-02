@@ -57,9 +57,10 @@ def na_py2win_datetime(dt: Optional[datetime]) -> Union[datetime, str]:
 class MSProject(Sequence):
     """MSProject class."""
 
-    def __init__(self):
+    def __init__(self, doc_path: PathLike):
         self.project = None
         self.mpp = win32com.client.Dispatch("MSProject.Application")
+        self.doc_path: PathLike = doc_path
         if debug:
             self.mpp.Visible = 1
 
@@ -69,20 +70,34 @@ class MSProject(Sequence):
         else:
             return f"<MSProject('{self.project.Name}')>"
 
+    def __enter__(self):
+        self.load(self.doc_path)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Only save on success
+        if exc_type is None:
+            self.save_and_close()
+        else:
+            self.close()
+
     def load(self, doc: PathLike) -> None:
         """Load a given MSProject file."""
         try:
-            self.mpp.FileOpen(doc)
+            self.mpp.FileOpen(str(doc))
             self.project = self.mpp.ActiveProject
         except Exception as e:
             logger.exception(f"Error opening file: {doc}")
             raise LoadingError(e)
 
+    def close(self) -> None:
+        self.mpp.Quit()
+
     def save_and_close(self) -> None:
         """Close an open MSProject, saving changes."""
         if self.project is not None:
             self.mpp.FileSave()
-        self.mpp.Quit()
+        self.close()
 
     def __len__(self) -> int:
         if self.project is None:
@@ -93,7 +108,12 @@ class MSProject(Sequence):
         return self.project.Tasks(task_nr + 1)
 
     def __getitem__(self, i: int) -> Optional["Task"]:
-        return Task(self, i)
+        if i >= len(self):
+            raise IndexError("Out of tasks")
+        if self.get_task(i) is None:
+            return None
+        else:
+            return Task(self, i)
 
 
 class Task:
