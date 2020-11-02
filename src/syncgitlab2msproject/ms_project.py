@@ -59,10 +59,15 @@ class MSProject(Sequence):
 
     def __init__(self):
         self.project = None
-        self._Tasks = None
         self.mpp = win32com.client.Dispatch("MSProject.Application")
         if debug:
             self.mpp.Visible = 1
+
+    def __repr__(self):
+        if self.project is None:
+            return "<MSProject(not loaded)>"
+        else:
+            return f"<MSProject('{self.project.Name}')>"
 
     def load(self, doc: PathLike) -> None:
         """Load a given MSProject file."""
@@ -107,8 +112,19 @@ class Task:
         self.project = project
         self.tasknr = task_number
 
+    def __repr__(self):
+        return f"<Task({self.project.__repr__()}, {self.tasknr}) '{self.name}'>"
+
     def _get_task(self):
         return self.project.get_task(self.tasknr)
+
+    @property
+    def name(self) -> str:
+        return self._get_task().Name
+
+    @name.setter
+    def name(self, value: str):
+        self._get_task().Name = value
 
     @property
     def start(self) -> datetime:
@@ -166,7 +182,7 @@ class Task:
 
     @percent_complete.setter
     def percent_complete(self, value: int):
-        if isinstance(value, int) and 0 <= value <=100:
+        if isinstance(value, int) and 0 <= value <= 100:
             self._get_task().PercentComplete = value
         else:
             raise MSProjectSyncError(
