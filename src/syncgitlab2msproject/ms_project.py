@@ -9,6 +9,7 @@ import win32com.client
 
 # Classes and functions to access Microsoft Project
 # Inspired by https://gist.github.com/zlorb/ff122e8563793bb28f79
+from win32com.universal import com_error
 
 from .exceptions import ClassNotInitiated, LoadingError, MSProjectSyncError
 from .decorators import make_none_safe
@@ -16,7 +17,7 @@ from .decorators import make_none_safe
 debug = True
 
 
-logger = getLogger("syncgitlab2msproject.ms_project")
+logger = getLogger(f"{__package__}.{__name__}")
 
 
 @make_none_safe
@@ -71,7 +72,7 @@ class MSProject(Sequence):
             return f"<MSProject('{self.project.Name}')>"
 
     def __enter__(self):
-        self.load(self.doc_path)
+        self.load()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -81,19 +82,24 @@ class MSProject(Sequence):
         else:
             self.close()
 
-    def load(self, doc: PathLike) -> None:
+    def load(self) -> None:
         """Load a given MSProject file."""
         try:
-            self.mpp.FileOpen(str(doc))
+            self.mpp.FileOpen(str(self.doc_path))
             self.project = self.mpp.ActiveProject
         except Exception as e:
-            logger.exception(f"Error opening file: {doc}")
+            logger.exception(f"Error opening file: {self.doc_path}")
             raise LoadingError(e)
 
     def close(self) -> None:
-        """Forces a closez"""
-        self.mpp.FileClose(False)
+        """Forces a close without saving (has to be done manually)"""
+        if self.project is not None:
+            try:
+                self.mpp.FileClose(False)
+            except com_error as e:
+                logger.info(f"File close failed: {e}")
         self.mpp.Quit()
+        del self.mpp
 
     def save_and_close(self) -> None:
         """Close an open MSProject, saving changes."""
