@@ -21,8 +21,8 @@ import logging
 
 from syncgitlab2msproject import __version__
 
-__author__ = "Carli"
-__copyright__ = "Carli"
+__author__ = "Carli Freudenberg"
+__copyright__ = "Carli Freudenberg"
 __license__ = "mit"
 
 _logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def parse_args(args):
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Just a Fibonacci demonstration")
+    parser = argparse.ArgumentParser(description="Sync Gitlab Issue into MS Project ")
     parser.add_argument(
         "--version",
         action="version",

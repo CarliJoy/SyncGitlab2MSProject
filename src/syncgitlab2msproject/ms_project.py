@@ -11,7 +11,7 @@ import win32com.client
 # Inspired by https://gist.github.com/zlorb/ff122e8563793bb28f79
 
 from .exceptions import ClassNotInitiated, LoadingError, MSProjectSyncError
-from .functions import make_none_safe
+from .decorators import make_none_safe
 
 debug = True
 
