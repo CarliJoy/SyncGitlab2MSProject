@@ -91,6 +91,8 @@ class MSProject(Sequence):
             raise LoadingError(e)
 
     def close(self) -> None:
+        """Forces a closez"""
+        self.mpp.FileClose(False)
         self.mpp.Quit()
 
     def save_and_close(self) -> None:
