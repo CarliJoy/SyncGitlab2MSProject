@@ -127,16 +127,17 @@ class Task:
     automatically.
     Properties naming follows PEP8 (lower case naming)
     """
+    __slots__ = ('_project', '_tasknr')
 
     def __init__(self, project: MSProject, task_number: int):
-        self.project = project
-        self.tasknr = task_number
+        self._project = project
+        self._tasknr = task_number
 
     def __repr__(self):
-        return f"<Task({self.project.__repr__()}, {self.tasknr}) '{self.name}'>"
+        return f"<Task({self._project.__repr__()}, {self._tasknr}) '{self.name}'>"
 
     def _get_task(self):
-        return self.project.get_task(self.tasknr)
+        return self._project.get_task(self._tasknr)
 
     @property
     def name(self) -> str:
