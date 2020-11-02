@@ -1,3 +1,11 @@
+class GitlabSyncError(ValueError):
+    pass
+
+
+class MovedIssueNotDefined(GitlabSyncError):
+    pass
+
+
 class MSProjectSyncError(ValueError):
     pass
 
