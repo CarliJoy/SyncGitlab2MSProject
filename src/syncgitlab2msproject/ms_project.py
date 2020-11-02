@@ -7,10 +7,10 @@ import pywintypes
 
 import win32com.client
 
-
-# Classes to accesss Microsoft Project
+# Classes and functions to access Microsoft Project
 # Inspired by https://gist.github.com/zlorb/ff122e8563793bb28f79
-from .exceptions import ClassNotInitiated, LoadingError
+
+from .exceptions import ClassNotInitiated, LoadingError, MSProjectSyncError
 from .functions import make_none_safe
 
 debug = True
@@ -159,6 +159,19 @@ class Task:
     @duration.setter
     def duration(self, value: int):
         self._get_task().duration = value
+
+    @property
+    def percent_complete(self) -> int:
+        return self._get_task().PercentComplete
+
+    @percent_complete.setter
+    def percent_complete(self, value: int):
+        if isinstance(value, int) and 0 <= value <=100:
+            self._get_task().PercentComplete = value
+        else:
+            raise MSProjectSyncError(
+                "Attribute percent_complete must be an integer between 0 and 100"
+            )
 
     @property
     def work(self) -> int:
