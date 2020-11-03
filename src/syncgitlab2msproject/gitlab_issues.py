@@ -1,11 +1,14 @@
 from typing import Optional, List
-from gitlab import Gitlab
 from datetime import datetime
+from logging import getLogger
 
 import dateutil.parser
-from .custom_types import GitlabIssue, GitlabUserDict
+from gitlab import Gitlab
 
+from .custom_types import GitlabIssue, GitlabUserDict
 from .exceptions import MovedIssueNotDefined
+
+logger = getLogger(f"{__package__}.{__name__}")
 
 
 def get_user_identifier(user_dict: GitlabUserDict) -> str:
@@ -56,6 +59,9 @@ class Issue:
         if not isinstance(value, Issue):
             raise ValueError("Can only set an Issue object as moved reference!")
         self._moved_reference = value
+
+    def __str__(self):
+        return f"'{self.title}' (ID: {self.id})"
 
     # **************************************************************
     # *** Define some default properties to allow static typing  ***
@@ -119,19 +125,19 @@ class Issue:
 
     @property
     def closed_at(self) -> Optional[datetime]:
-        if val := self.obj.closed_at is not None:
+        if (val := self.obj.closed_at) is not None:
             return dateutil.parser.parse(val)
         return None
 
     @property
     def due_date(self) -> Optional[datetime]:
-        if val := self.obj.due_date is not None:
+        if (val := self.obj.due_date) is not None:
             return dateutil.parser.parse(val)
         return None
 
     @property
     def closed_by(self) -> Optional[str]:
-        if val := self.obj.closed_by is not None:
+        if (val := self.obj.closed_by) is not None:
             return get_user_identifier(val)
         return None
 

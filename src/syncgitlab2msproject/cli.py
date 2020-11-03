@@ -9,13 +9,14 @@ import logging
 from pathlib import Path
 
 from requests import ConnectionError
-from syncgitlab2msproject import __version__
+from syncgitlab2msproject import __version__, MSProject
 
 __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "mit"
 
 from syncgitlab2msproject.gitlab_issues import get_project_issues, get_gitlab_class, get_group_issues
+from syncgitlab2msproject.sync import sync_gitlab_issues_to_ms_project
 
 _logger = logging.getLogger(f"{__package__}.{__name__}")
 
@@ -134,8 +135,11 @@ def main(args):
         issues = get_issues_func(gitlab, args.gitlab_resource_id)
     except ConnectionError as e:
         _logger.error(f"Error contacting gitlab instance: {e}")
-
-    _logger.info("Script ends here")
+        exit(64)
+    else:
+        with MSProject(ms_project_file.absolute()) as tasks:
+            sync_gitlab_issues_to_ms_project(tasks, issues)
+    _logger.info("Finished syncing")
 
 
 def run():

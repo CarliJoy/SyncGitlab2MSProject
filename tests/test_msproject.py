@@ -97,7 +97,7 @@ def test_setting_everything():
         if prop_type == datetime:
             new_value = datetime(2020, 3, 4, 20, 15, 30).astimezone()
         elif prop_type == int:
-            new_value = 5
+            new_value = 1
         elif prop_type == str:
             new_value = "Test String"
         elif prop_type == bool:

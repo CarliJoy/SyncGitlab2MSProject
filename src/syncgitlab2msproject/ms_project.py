@@ -1,6 +1,6 @@
 from os import PathLike
 from logging import getLogger
-from typing import Sequence, Optional, Union
+from typing import Sequence, Optional, Union, List
 from datetime import datetime
 import dateutil
 import pywintypes
@@ -13,8 +13,6 @@ from win32com.universal import com_error
 
 from .exceptions import ClassNotInitiated, LoadingError, MSProjectSyncError
 from .decorators import make_none_safe
-
-debug = True
 
 
 logger = getLogger(f"{__package__}.{__name__}")
@@ -55,15 +53,18 @@ def na_py2win_datetime(dt: Optional[datetime]) -> Union[datetime, str]:
         return dt
 
 
+def get_project_path(ms_project) -> str:
+    return ms_project.Path + "\\" + ms_project.Name
+
+
 class MSProject(Sequence):
     """MSProject class."""
 
     def __init__(self, doc_path: PathLike):
         self.project = None
+        self._close_after: Optional[bool] = None
         self.mpp = win32com.client.Dispatch("MSProject.Application")
         self.doc_path: PathLike = doc_path
-        if debug:
-            self.mpp.Visible = 1
 
     def __repr__(self):
         if self.project is None:
@@ -78,15 +79,20 @@ class MSProject(Sequence):
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Only save on success
         if exc_type is None:
-            self.save_and_close()
-        else:
+            self.save()
+        if self._close_after:
             self.close()
+
+    def _open_projects(self) -> List[str]:
+        return [get_project_path(project) for project in self.mpp.Projects]
 
     def load(self) -> None:
         """Load a given MSProject file."""
+        already_open = self._open_projects()
         try:
             self.mpp.FileOpen(str(self.doc_path))
             self.project = self.mpp.ActiveProject
+            self._close_after = get_project_path(self.project) not in already_open
         except Exception as e:
             logger.exception(f"Error opening file: {self.doc_path}")
             raise LoadingError(e)
@@ -101,18 +107,21 @@ class MSProject(Sequence):
         self.mpp.Quit()
         del self.mpp
 
-    def save_and_close(self) -> None:
+    def save(self) -> None:
         """Close an open MSProject, saving changes."""
         if self.project is not None:
             self.mpp.FileSave()
-        self.close()
 
     def __len__(self) -> int:
         if self.project is None:
             raise ClassNotInitiated("Can't get length for a not loaded project")
         return self.project.Tasks.Count
 
-    def get_task(self, task_nr: int):
+    def add_task(self, name: str) -> "Task":
+        ms_task = self.project.Tasks.Add(name)
+        return Task(self, ms_task.ID - 1)
+
+    def get_task(self, task_nr: int) -> Optional["Task"]:
         return self.project.Tasks(task_nr + 1)
 
     def __getitem__(self, i: int) -> Optional["Task"]:
@@ -135,7 +144,8 @@ class Task:
     automatically.
     Properties naming follows PEP8 (lower case naming)
     """
-    __slots__ = ('_project', '_tasknr')
+
+    __slots__ = ("_project", "_tasknr")
 
     def __init__(self, project: MSProject, task_number: int):
         self._project = project
@@ -144,12 +154,15 @@ class Task:
     def __repr__(self):
         return f"<Task({self._project.__repr__()}, {self._tasknr}) '{self.name}'>"
 
+    def __str__(self):
+        return f"'{self.name}' (ID: {self.id})"
+
     def _get_task(self):
         return self._project.get_task(self._tasknr)
 
     @property
     def id(self) -> int:
-        return self._get_task().UniqueID
+        return self._get_task().ID
 
     @property
     def name(self) -> str:
@@ -262,6 +275,17 @@ class Task:
     @estimated.setter
     def estimated(self, value: bool):
         self._get_task().Estimated = value
+
+    @property
+    def outline_level(self) -> int:
+        return self._get_task().OutlineLevel
+
+    @outline_level.setter
+    def outline_level(self, value: int):
+        if value > 1:
+            self._get_task().OutlineLevel = value
+        else:
+            raise ValueError("Outline Level has to be an int larger then zero.")
 
     @property
     def text1(self) -> str:
