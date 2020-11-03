@@ -148,6 +148,10 @@ class Task:
         return self._project.get_task(self._tasknr)
 
     @property
+    def id(self) -> int:
+        return self._get_task().UniqueID
+
+    @property
     def name(self) -> str:
         return self._get_task().Name
 

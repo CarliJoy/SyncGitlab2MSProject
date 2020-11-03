@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Union, Optional
+from typing import Any, Union, Optional, Callable
 from pathlib import Path
 from inspect import getattr_static, signature
 from datetime import datetime
@@ -27,11 +27,15 @@ class DoNotSave(Exception):
 
 
 # TODO Set up Pytest with copying the Test file
-# TODO Make sure that the copied file was not modified
+# TODO Make sure that the copied file was not modified --> https://docs.pytest.org/en/stable/fixture.html
 # TODO test saving and loading
 
 
-def get_prop_set_type_annotation(obj: Any, property_name: str) -> Union[str, type]:
+def get_prop_setter_func(obj: Any, property_name: str) -> Callable:
+    return getattr_static(obj, property_name).fset
+
+
+def get_prop_set_type_annotation(setter_function: Callable) -> Union[str, type]:
     """
     Get the type annotation of obj for property
     """
@@ -39,7 +43,7 @@ def get_prop_set_type_annotation(obj: Any, property_name: str) -> Union[str, typ
     # Combination of
     # https://stackoverflow.com/a/9917213/3813064 and
     # https://stackoverflow.com/questions/53949473/python-dynamically-access-type-annotation-of-a-property
-    sign = signature(getattr_static(obj, property_name).fset)
+    sign = signature(setter_function)
     return next(reversed(sign.parameters.values())).annotation
 
 
@@ -119,14 +123,15 @@ def test_setting_everything():
             task = tasks[0]
             for attribute in dir(task):
                 if not attribute.startswith("_"):
-                    prop_type = get_prop_set_type_annotation(task, attribute)
-                    if prop_type in (int, bool, None, datetime, str):
-                        check_setting_val(task, attribute, prop_type)
-                    elif prop_type == Optional[datetime]:
-                        check_setting_val(task, attribute, None)
-                        check_setting_val(task, attribute, datetime)
-                    else:
-                        print(f"{attribute} ignored {prop_type}")
+                    if setter_func := get_prop_setter_func(task, attribute):
+                        prop_type = get_prop_set_type_annotation(setter_func)
+                        if prop_type in (int, bool, None, datetime, str):
+                            check_setting_val(task, attribute, prop_type)
+                        elif prop_type == Optional[datetime]:
+                            check_setting_val(task, attribute, None)
+                            check_setting_val(task, attribute, datetime)
+                        else:
+                            print(f"{attribute} ignored {prop_type}")
             raise DoNotSave("We do not want the file to save!")
 
 
