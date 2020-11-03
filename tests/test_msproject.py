@@ -26,6 +26,11 @@ class DoNotSave(Exception):
     pass
 
 
+# TODO Set up Pytest with copying the Test file
+# TODO Make sure that the copied file was not modified
+# TODO test saving and loading
+
+
 def get_prop_set_type_annotation(obj: Any, property_name: str) -> Union[str, type]:
     """
     Get the type annotation of obj for property
