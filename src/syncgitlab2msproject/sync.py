@@ -11,6 +11,8 @@ logger = getLogger(f"{__package__}.{__name__}")
 
 GL_PREFIX = "!!DO NOT CHANGE!! Gitlab:"
 
+DEFAULT_DURATION = 8 * 60
+
 
 def get_issue_ref_id(issue: Issue) -> IssueRef:
     return IssueRef(issue.id)
@@ -69,6 +71,10 @@ def update_task_with_issue_data(
         if issue.has_tasks or task.percent_complete == 0:
             task.percent_complete = issue.percentage_tasks_done
         task.work = issue.time_estimated
+        # Update duration in case it seems to be default
+        if task.duration == DEFAULT_DURATION and task.estimated:
+            if task.work > 0:
+                task.duration = task.work
         task.actual_work = issue.time_spent_total
         task.text29 = issue.web_url
         task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
