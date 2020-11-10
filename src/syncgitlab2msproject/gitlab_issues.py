@@ -163,6 +163,10 @@ class Issue:
     def labels(self) -> List[str]:
         return self.obj.labels
 
+    @property
+    def web_url(self) -> str:
+        return self.obj.web_url
+
 
 def get_gitlab_class(server: str, personal_token: Optional[str] = None) -> Gitlab:
     if personal_token is None:

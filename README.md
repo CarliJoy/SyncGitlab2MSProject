@@ -7,13 +7,15 @@ the Issues in Gitlab as a part of project planning to follow the process.
 Currently only Information from Gitlab Issues are inserted and updated within the
 Project File. Changes in synchronised fields will be overwritten.
 
-The following MS Project attributes are synced from gitlab:
+The following MS Project attributes are synced (overwritten) from gitlab:
   - Name
   - Notes (from Description)
   - Deadline (from Due Date)
   - Work (from Time Estimated)
   - Actual Work (from Time Spent)
   - Percent Complete (if Tasks given for issue, otherwise only 0% and 100% [for closed])
+  - Text28 (the list of label)
+  - Text29 (the web URL to the issue)
   - Text30 (the reference to the issue is stored there)
  
 Not yet implemented but planned

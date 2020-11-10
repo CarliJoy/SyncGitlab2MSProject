@@ -15,7 +15,11 @@ __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "mit"
 
-from syncgitlab2msproject.gitlab_issues import get_project_issues, get_gitlab_class, get_group_issues
+from syncgitlab2msproject.gitlab_issues import (
+    get_project_issues,
+    get_gitlab_class,
+    get_group_issues,
+)
 from syncgitlab2msproject.sync import sync_gitlab_issues_to_ms_project
 
 _logger = logging.getLogger(f"{__package__}.{__name__}")
@@ -68,7 +72,7 @@ def parse_args(args):
         "--gitlab-token",
         dest="gitlab_token",
         help="Gitlab personal access token",
-        default=None
+        default=None,
     )
 
     parser.add_argument(
@@ -117,7 +121,7 @@ def main(args):
     ms_project_file = Path(args.project_file)
     if not ms_project_file.is_file():
         _logger.error(
-           f"Could not open '{args.project_file}' - seems not to be a valid file."
+            f"Could not open '{args.project_file}' - seems not to be a valid file."
         )
         exit(128)
     _logger.debug("Starting loading issues")
