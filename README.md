@@ -15,10 +15,10 @@ The following MS Project attributes are synced (overwritten) from gitlab:
   - Actual Work (from Time Spent)
   - Percent Complete (if Tasks given for issue, otherwise only 0% and 100% [for closed])
   - Text28 (the list of label)
-  - Text29 (the web URL to the issue)
   - Text30 (the reference to the issue is stored there)
- 
-Not yet implemented but planned
+  - Hyperlink (link to gitlab issue - note: somehow ms project is not handling the links correctly) 
+
+Not yet implemented but planned>
   - Resources (from Assigned)
 
 Moved issues will be handled if the group selected and the issue was moved within the 

@@ -76,7 +76,8 @@ def update_task_with_issue_data(
             if task.work > 0:
                 task.duration = task.work
         task.actual_work = issue.time_spent_total
-        task.text29 = issue.web_url
+        task.hyperlink_name = "Open in Gitlab"
+        task.hyperlink_address = issue.web_url
         task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
         if issue.is_closed:
             task.actual_finish = issue.closed_at

@@ -277,6 +277,28 @@ class Task:
         self._get_task().Estimated = value
 
     @property
+    def hyperlink_name(self) -> str:
+        """set or get hyplerlink (name)
+        see https://docs.microsoft.com/en-us/office/vba/api/project.task.hyperlink
+        """
+        return self._get_task().Hyperlink
+
+    @hyperlink_name.setter
+    def hyperlink_name(self, value: str):
+        self._get_task().Hyperlink = value
+
+    @property
+    def hyperlink_address(self) -> str:
+        """set or get hyplerlink (url)
+        see https://docs.microsoft.com/en-us/office/vba/api/project.task.hyperlink
+        """
+        return self._get_task().HyperlinkAddress
+
+    @hyperlink_address.setter
+    def hyperlink_address(self, value: str):
+        self._get_task().HyperlinkAddress = value
+
+    @property
     def outline_level(self) -> int:
         return self._get_task().OutlineLevel
 
