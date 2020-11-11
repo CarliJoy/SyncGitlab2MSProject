@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 from logging import getLogger
 
 from syncgitlab2msproject.exceptions import MSProjectValueSetError
+import win32com.universal
 
 from .exceptions import MovedIssueNotDefined
 from .gitlab_issues import Issue
@@ -83,9 +84,9 @@ def update_task_with_issue_data(
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
-        except MSProjectValueSetError as e:
-            logger.exception(
-                f"Could not sync issue {issue} to task {task}.\nError: {e}"
+        except [MSProjectValueSetError, win32com.universal.com_error] as e:
+            logger.error(
+                f"FATAL: Could not sync issue {issue} to task {task}.\nError: {e}"
             )
         else:
             logger.info(f"Synced issue {issue} to task {task}")

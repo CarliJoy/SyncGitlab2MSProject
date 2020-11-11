@@ -1,6 +1,6 @@
 from os import PathLike
 from logging import getLogger
-from typing import Sequence, Optional, Union, List
+from typing import Sequence, Optional, Union, List, Any
 from datetime import datetime
 import dateutil
 import pywintypes
@@ -161,7 +161,19 @@ class Task:
 
     def _get_task(self):
         return self._project.get_task(self._tasknr)
-
+    
+    def _set_task_val(self, attribute: str, value: Any):
+        """
+        Set attribute to MS Project task but do not fail if set is not working
+        """
+        try:
+            setattr(self._get_task(), attribute, value)
+        except com_error as e:
+            logger.error(
+                f"Could not set attribute {attribute} with value '{value}' "
+                f"({type(value)}) for {self}.\n Exception: '{e}'"
+            )
+            
     @property
     def id(self) -> int:
         return self._get_task().ID
@@ -172,7 +184,7 @@ class Task:
 
     @name.setter
     def name(self, value: str):
-        self._get_task().Name = value
+        self._set_task_val("Name", value)
 
     @property
     def start(self) -> datetime:
@@ -181,7 +193,7 @@ class Task:
     @start.setter
     def start(self, value: datetime):
         raise_exception_if_not_datetime(value)
-        self._get_task().Start = value
+        self._set_task_val("Start", value)
 
     @property
     def finish(self) -> datetime:
@@ -190,7 +202,7 @@ class Task:
     @finish.setter
     def finish(self, value: datetime):
         raise_exception_if_not_datetime(value)
-        self._get_task().Finish = value
+        self._set_task_val("Finish", value)
 
     @property
     def actual_start(self) -> Optional[datetime]:
@@ -200,7 +212,7 @@ class Task:
     def actual_start(self, value: Optional[datetime]):
         if value is not None:
             raise_exception_if_not_datetime(value)
-        self._get_task().ActualStart = na_py2win_datetime(value)
+        self._set_task_val("ActualStart", na_py2win_datetime(value))
 
     @property
     def actual_finish(self) -> Optional[datetime]:
@@ -210,7 +222,7 @@ class Task:
     def actual_finish(self, value: Optional[datetime]):
         if value is not None:
             raise_exception_if_not_datetime(value)
-        self._get_task().ActualFinish = na_py2win_datetime(value)
+        self._set_task_val("ActualFinish", na_py2win_datetime(value))
 
     @property
     def deadline(self) -> Optional[datetime]:
@@ -220,7 +232,7 @@ class Task:
     def deadline(self, value: Optional[datetime]):
         if value is not None:
             raise_exception_if_not_datetime(value)
-        self._get_task().Deadline = na_py2win_datetime(value)
+        self._set_task_val("Deadline", na_py2win_datetime(value))
 
     @property
     def notes(self) -> str:
@@ -228,7 +240,7 @@ class Task:
 
     @notes.setter
     def notes(self, value: str):
-        self._get_task().Notes = value
+        self._set_task_val("Notes", value)
 
     @property
     def duration(self) -> Optional[int]:
@@ -238,7 +250,7 @@ class Task:
 
     @duration.setter
     def duration(self, value: int):
-        self._get_task().duration = convert_to_int_or_raise_exception(value)
+        self._set_task_val("duration", convert_to_int_or_raise_exception(value))
 
     @property
     def percent_complete(self) -> int:
@@ -248,7 +260,7 @@ class Task:
     def percent_complete(self, value: int):
         value = convert_to_int_or_raise_exception(value)
         if isinstance(value, int) and 0 <= value <= 100:
-            self._get_task().PercentComplete = value
+            self._set_task_val("PercentComplete", value)
         else:
             raise MSProjectValueSetError(
                 "Attribute percent_complete must be an integer between 0 and 100"
@@ -261,7 +273,7 @@ class Task:
 
     @work.setter
     def work(self, value: int):
-        self._get_task().Work = convert_to_int_or_raise_exception(value)
+        self._set_task_val("Work", convert_to_int_or_raise_exception(value))
 
     @property
     def actual_work(self):
@@ -273,7 +285,7 @@ class Task:
 
     @actual_work.setter
     def actual_work(self, value: int):
-        self._get_task().ActualWork = convert_to_int_or_raise_exception(value)
+        self._set_task_val("ActualWork", convert_to_int_or_raise_exception(value))
 
     @property
     def estimated(self) -> bool:
@@ -285,7 +297,7 @@ class Task:
 
     @estimated.setter
     def estimated(self, value: bool):
-        self._get_task().Estimated = value
+        self._set_task_val("Estimated", value)
 
     @property
     def hyperlink_name(self) -> str:
@@ -296,7 +308,7 @@ class Task:
 
     @hyperlink_name.setter
     def hyperlink_name(self, value: str):
-        self._get_task().Hyperlink = value
+        self._set_task_val("Hyperlink", value)
 
     @property
     def hyperlink_address(self) -> str:
@@ -307,7 +319,7 @@ class Task:
 
     @hyperlink_address.setter
     def hyperlink_address(self, value: str):
-        self._get_task().HyperlinkAddress = value
+        self._set_task_val("HyperlinkAddress", value)
 
     @property
     def outline_level(self) -> int:
@@ -317,7 +329,7 @@ class Task:
     def outline_level(self, value: int):
         value = convert_to_int_or_raise_exception(value)
         if value > 1:
-            self._get_task().OutlineLevel = value
+            self._set_task_val("OutlineLevel", value)
         else:
             raise MSProjectValueSetError("Outline Level has to be an int larger then zero.")
 
@@ -328,7 +340,7 @@ class Task:
 
     @text1.setter
     def text1(self, value: str):
-        self._get_task().Text1 = value
+        self._set_task_val("Text1", value)
 
     @property
     def text2(self) -> str:
@@ -337,7 +349,7 @@ class Task:
 
     @text2.setter
     def text2(self, value: str):
-        self._get_task().Text2 = value
+        self._set_task_val("Text2", value)
 
     @property
     def text3(self) -> str:
@@ -346,7 +358,7 @@ class Task:
 
     @text3.setter
     def text3(self, value: str):
-        self._get_task().Text3 = value
+        self._set_task_val("Text3", value)
 
     @property
     def text4(self) -> str:
@@ -355,7 +367,7 @@ class Task:
 
     @text4.setter
     def text4(self, value: str):
-        self._get_task().Text4 = value
+        self._set_task_val("Text4", value)
 
     @property
     def text5(self) -> str:
@@ -364,7 +376,7 @@ class Task:
 
     @text5.setter
     def text5(self, value: str):
-        self._get_task().Text5 = value
+        self._set_task_val("Text5", value)
 
     @property
     def text6(self) -> str:
@@ -373,7 +385,7 @@ class Task:
 
     @text6.setter
     def text6(self, value: str):
-        self._get_task().Text6 = value
+        self._set_task_val("Text6", value)
 
     @property
     def text7(self) -> str:
@@ -382,7 +394,7 @@ class Task:
 
     @text7.setter
     def text7(self, value: str):
-        self._get_task().Text7 = value
+        self._set_task_val("Text7", value)
 
     @property
     def text8(self) -> str:
@@ -391,7 +403,7 @@ class Task:
 
     @text8.setter
     def text8(self, value: str):
-        self._get_task().Text8 = value
+        self._set_task_val("Text8", value)
 
     @property
     def text9(self) -> str:
@@ -400,7 +412,7 @@ class Task:
 
     @text9.setter
     def text9(self, value: str):
-        self._get_task().Text9 = value
+        self._set_task_val("Text9", value)
 
     @property
     def text10(self) -> str:
@@ -409,7 +421,7 @@ class Task:
 
     @text10.setter
     def text10(self, value: str):
-        self._get_task().Text10 = value
+        self._set_task_val("Text10", value)
 
     @property
     def text11(self) -> str:
@@ -418,7 +430,7 @@ class Task:
 
     @text11.setter
     def text11(self, value: str):
-        self._get_task().Text11 = value
+        self._set_task_val("Text11", value)
 
     @property
     def text12(self) -> str:
@@ -427,7 +439,7 @@ class Task:
 
     @text12.setter
     def text12(self, value: str):
-        self._get_task().Text12 = value
+        self._set_task_val("Text12", value)
 
     @property
     def text13(self) -> str:
@@ -436,7 +448,7 @@ class Task:
 
     @text13.setter
     def text13(self, value: str):
-        self._get_task().Text13 = value
+        self._set_task_val("Text13", value)
 
     @property
     def text14(self) -> str:
@@ -445,7 +457,7 @@ class Task:
 
     @text14.setter
     def text14(self, value: str):
-        self._get_task().Text14 = value
+        self._set_task_val("Text14", value)
 
     @property
     def text15(self) -> str:
@@ -454,7 +466,7 @@ class Task:
 
     @text15.setter
     def text15(self, value: str):
-        self._get_task().Text15 = value
+        self._set_task_val("Text15", value)
 
     @property
     def text16(self) -> str:
@@ -463,7 +475,7 @@ class Task:
 
     @text16.setter
     def text16(self, value: str):
-        self._get_task().Text16 = value
+        self._set_task_val("Text16", value)
 
     @property
     def text17(self) -> str:
@@ -472,7 +484,7 @@ class Task:
 
     @text17.setter
     def text17(self, value: str):
-        self._get_task().Text17 = value
+        self._set_task_val("Text17", value)
 
     @property
     def text18(self) -> str:
@@ -481,7 +493,7 @@ class Task:
 
     @text18.setter
     def text18(self, value: str):
-        self._get_task().Text18 = value
+        self._set_task_val("Text18", value)
 
     @property
     def text19(self) -> str:
@@ -490,7 +502,7 @@ class Task:
 
     @text19.setter
     def text19(self, value: str):
-        self._get_task().Text19 = value
+        self._set_task_val("Text19", value)
 
     @property
     def text20(self) -> str:
@@ -499,7 +511,7 @@ class Task:
 
     @text20.setter
     def text20(self, value: str):
-        self._get_task().Text20 = value
+        self._set_task_val("Text20", value)
 
     @property
     def text21(self) -> str:
@@ -508,7 +520,7 @@ class Task:
 
     @text21.setter
     def text21(self, value: str):
-        self._get_task().Text21 = value
+        self._set_task_val("Text21", value)
 
     @property
     def text22(self) -> str:
@@ -517,7 +529,7 @@ class Task:
 
     @text22.setter
     def text22(self, value: str):
-        self._get_task().Text22 = value
+        self._set_task_val("Text22", value)
 
     @property
     def text23(self) -> str:
@@ -526,7 +538,7 @@ class Task:
 
     @text23.setter
     def text23(self, value: str):
-        self._get_task().Text23 = value
+        self._set_task_val("Text23", value)
 
     @property
     def text24(self) -> str:
@@ -535,7 +547,7 @@ class Task:
 
     @text24.setter
     def text24(self, value: str):
-        self._get_task().Text24 = value
+        self._set_task_val("Text24", value)
 
     @property
     def text25(self) -> str:
@@ -544,7 +556,7 @@ class Task:
 
     @text25.setter
     def text25(self, value: str):
-        self._get_task().Text25 = value
+        self._set_task_val("Text25", value)
 
     @property
     def text26(self) -> str:
@@ -553,7 +565,7 @@ class Task:
 
     @text26.setter
     def text26(self, value: str):
-        self._get_task().Text26 = value
+        self._set_task_val("Text26", value)
 
     @property
     def text27(self) -> str:
@@ -562,7 +574,7 @@ class Task:
 
     @text27.setter
     def text27(self, value: str):
-        self._get_task().Text27 = value
+        self._set_task_val("Text27", value)
 
     @property
     def text28(self) -> str:
@@ -571,7 +583,7 @@ class Task:
 
     @text28.setter
     def text28(self, value: str):
-        self._get_task().Text28 = value
+        self._set_task_val("Text28", value)
 
     @property
     def text29(self) -> str:
@@ -580,7 +592,7 @@ class Task:
 
     @text29.setter
     def text29(self, value: str):
-        self._get_task().Text29 = value
+        self._set_task_val("Text29", value)
 
     @property
     def text30(self) -> str:
@@ -589,4 +601,4 @@ class Task:
 
     @text30.setter
     def text30(self, value: str):
-        self._get_task().Text30 = value
+        self._set_task_val("Text30", value)
