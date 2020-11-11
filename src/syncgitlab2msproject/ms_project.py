@@ -9,9 +9,11 @@ import win32com.client
 
 # Classes and functions to access Microsoft Project
 # Inspired by https://gist.github.com/zlorb/ff122e8563793bb28f79
+
 from win32com.universal import com_error
 
-from .exceptions import ClassNotInitiated, LoadingError, MSProjectSyncError
+from .funcions import raise_exception_if_not_datetime, convert_to_int_or_raise_exception
+from .exceptions import ClassNotInitiated, LoadingError, MSProjectValueSetError
 from .decorators import make_none_safe
 
 
@@ -178,6 +180,7 @@ class Task:
 
     @start.setter
     def start(self, value: datetime):
+        raise_exception_if_not_datetime(value)
         self._get_task().Start = value
 
     @property
@@ -186,6 +189,7 @@ class Task:
 
     @finish.setter
     def finish(self, value: datetime):
+        raise_exception_if_not_datetime(value)
         self._get_task().Finish = value
 
     @property
@@ -194,6 +198,8 @@ class Task:
 
     @actual_start.setter
     def actual_start(self, value: Optional[datetime]):
+        if value is not None:
+            raise_exception_if_not_datetime(value)
         self._get_task().ActualStart = na_py2win_datetime(value)
 
     @property
@@ -202,6 +208,8 @@ class Task:
 
     @actual_finish.setter
     def actual_finish(self, value: Optional[datetime]):
+        if value is not None:
+            raise_exception_if_not_datetime(value)
         self._get_task().ActualFinish = na_py2win_datetime(value)
 
     @property
@@ -210,6 +218,8 @@ class Task:
 
     @deadline.setter
     def deadline(self, value: Optional[datetime]):
+        if value is not None:
+            raise_exception_if_not_datetime(value)
         self._get_task().Deadline = na_py2win_datetime(value)
 
     @property
@@ -228,7 +238,7 @@ class Task:
 
     @duration.setter
     def duration(self, value: int):
-        self._get_task().duration = value
+        self._get_task().duration = convert_to_int_or_raise_exception(value)
 
     @property
     def percent_complete(self) -> int:
@@ -236,10 +246,11 @@ class Task:
 
     @percent_complete.setter
     def percent_complete(self, value: int):
+        value = convert_to_int_or_raise_exception(value)
         if isinstance(value, int) and 0 <= value <= 100:
             self._get_task().PercentComplete = value
         else:
-            raise MSProjectSyncError(
+            raise MSProjectValueSetError(
                 "Attribute percent_complete must be an integer between 0 and 100"
             )
 
@@ -250,7 +261,7 @@ class Task:
 
     @work.setter
     def work(self, value: int):
-        self._get_task().Work = value
+        self._get_task().Work = convert_to_int_or_raise_exception(value)
 
     @property
     def actual_work(self):
@@ -262,7 +273,7 @@ class Task:
 
     @actual_work.setter
     def actual_work(self, value: int):
-        self._get_task().ActualWork = value
+        self._get_task().ActualWork = convert_to_int_or_raise_exception(value)
 
     @property
     def estimated(self) -> bool:
@@ -304,10 +315,11 @@ class Task:
 
     @outline_level.setter
     def outline_level(self, value: int):
+        value = convert_to_int_or_raise_exception(value)
         if value > 1:
             self._get_task().OutlineLevel = value
         else:
-            raise ValueError("Outline Level has to be an int larger then zero.")
+            raise MSProjectValueSetError("Outline Level has to be an int larger then zero.")
 
     @property
     def text1(self) -> str:

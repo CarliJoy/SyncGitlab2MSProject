@@ -1,8 +1,9 @@
 from typing import List, Dict, Optional
 from logging import getLogger
 
-from syncgitlab2msproject.exceptions import MovedIssueNotDefined
+from syncgitlab2msproject.exceptions import MSProjectValueSetError
 
+from .exceptions import MovedIssueNotDefined
 from .gitlab_issues import Issue
 from .ms_project import Task, MSProject
 from .custom_types import IssueRef
@@ -64,23 +65,30 @@ def update_task_with_issue_data(
             )
     else:
         set_issue_ref_to_task(task, issue)
-        task.name = issue.title
-        task.notes = issue.description
-        if issue.due_date is not None:
-            task.deadline = issue.due_date
-        if issue.has_tasks or task.percent_complete == 0:
-            task.percent_complete = issue.percentage_tasks_done
-        task.work = issue.time_estimated
-        # Update duration in case it seems to be default
-        if task.duration == DEFAULT_DURATION and task.estimated:
-            if task.work > 0:
-                task.duration = task.work
-        task.actual_work = issue.time_spent_total
-        task.hyperlink_name = "Open in Gitlab"
-        task.hyperlink_address = issue.web_url
-        task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
-        if issue.is_closed:
-            task.actual_finish = issue.closed_at
+        try:
+            task.name = issue.title
+            task.notes = issue.description
+            if issue.due_date is not None:
+                task.deadline = issue.due_date
+            if issue.has_tasks or task.percent_complete == 0:
+                task.percent_complete = issue.percentage_tasks_done
+            task.work = issue.time_estimated
+            # Update duration in case it seems to be default
+            if task.duration == DEFAULT_DURATION and task.estimated:
+                if task.work > 0:
+                    task.duration = task.work
+            task.actual_work = issue.time_spent_total
+            task.hyperlink_name = "Open in Gitlab"
+            task.hyperlink_address = issue.web_url
+            task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
+            if issue.is_closed:
+                task.actual_finish = issue.closed_at
+        except MSProjectValueSetError as e:
+            logger.exception(
+                f"Could not sync issue {issue} to task {task}.\nError: {e}"
+            )
+        else:
+            logger.info(f"Synced issue {issue} to task {task}")
     return parent_ids
 
 

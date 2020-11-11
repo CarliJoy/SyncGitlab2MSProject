@@ -10,6 +10,10 @@ class MSProjectSyncError(ValueError):
     pass
 
 
+class MSProjectValueSetError(MSProjectSyncError):
+    pass
+
+
 class LoadingError(MSProjectSyncError):
     pass
 
