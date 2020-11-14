@@ -30,7 +30,7 @@ def win2python_datetime(win32datetime: "pywintypes.datetime") -> datetime:
     see http://timgolden.me.uk/python/win32_how_do_i/use-a-pytime-value.html
     for an alternative.
     This solution is taken from:
-    https://stackoverflow.com/questions/39028290/python-convert-pywintyptes-datetime-to-datetime-datetime
+    https://stackoverflow.com/questions/39028290/
     """
     return dateutil.parser.parse(str(win32datetime))
 
@@ -161,7 +161,7 @@ class Task:
 
     def _get_task(self):
         return self._project.get_task(self._tasknr)
-    
+
     def _set_task_val(self, attribute: str, value: Any):
         """
         Set attribute to MS Project task but do not fail if set is not working
@@ -173,7 +173,7 @@ class Task:
                 f"Could not set attribute {attribute} with value '{value}' "
                 f"({type(value)}) for {self}.\n Exception: '{e}'"
             )
-            
+
     @property
     def id(self) -> int:
         return self._get_task().ID
@@ -331,7 +331,9 @@ class Task:
         if value > 1:
             self._set_task_val("OutlineLevel", value)
         else:
-            raise MSProjectValueSetError("Outline Level has to be an int larger then zero.")
+            raise MSProjectValueSetError(
+                "Outline Level has to be an int larger then zero."
+            )
 
     @property
     def text1(self) -> str:
