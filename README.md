@@ -1,3 +1,11 @@
+[![Build Status](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject.svg?branch=master)](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject)
+[![](https://img.shields.io/pypi/v/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![](https://img.shields.io/pypi/pyversions/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![](https://img.shields.io/pypi/wheel/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![](https://img.shields.io/pypi/status/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![Code Style Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # SyncGitlab2MSProject
 
 Sync Gitlab Issues with a Microsoft Project File.
