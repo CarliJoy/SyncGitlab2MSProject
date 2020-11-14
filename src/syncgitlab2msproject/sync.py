@@ -1,10 +1,9 @@
 from typing import List, Dict, Optional
 from logging import getLogger
 
-from syncgitlab2msproject.exceptions import MSProjectValueSetError
 import win32com.universal
 
-from .exceptions import MovedIssueNotDefined
+from .exceptions import MovedIssueNotDefined, MSProjectValueSetError
 from .gitlab_issues import Issue
 from .ms_project import Task, MSProject
 from .custom_types import IssueRef
