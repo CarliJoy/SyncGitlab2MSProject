@@ -18,13 +18,42 @@ The following MS Project attributes are synced (overwritten) from gitlab:
   - Text30 (the reference to the issue is stored there)
   - Hyperlink (link to gitlab issue - note: somehow ms project is not handling the links correctly) 
 
-Not yet implemented but planned>
+Not yet implemented but planned:
   - Resources (from Assigned)
 
 Moved issues will be handled if the group selected and the issue was moved within the 
 group. Problem is that accessing issues only by ID is just allowed for admins.
 ## Requirements
 This project runs only in an Windows Environment with Microsoft Project installed.
+
+## Usage
+```
+usage: sync_gitlab2msproject [-h] [--version] [-v] [-vv] [--gitlab-url GITLAB_URL] [--gitlab-token GITLAB_TOKEN] {project,group} gitlab_resource_id project_file
+
+Sync Gitlab Issue into MS Project
+
+positional arguments:
+  {project,group}       Gitlab resource type to sync with
+  gitlab_resource_id    Gitlab resource id to sync with
+  project_file          Microsoft Project File to sync with
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -v, --verbose         set loglevel to INFO
+  -vv, --very-verbose   set loglevel to DEBUG
+  --gitlab-url GITLAB_URL
+                        URL to the gitlab instance i.e. https://gitlab.your-company.com
+  --gitlab-token GITLAB_TOKEN
+                        Gitlab personal access token
+
+```
+
+## Quickstart
+1. Optional: Install [pipx](https://github.com/pipxproject/pipx)
+2. Install the package `pipx install SyncGitlab2MSProject` (or use `pip` if you don't like pipx)
+3. Push the gitlab Issue to your MS Project file:
+`sync_gitlab2msproject --gitlab-url https://gitlab.company.com --gitlab-token <your_token> group <your_group_id> ms_project_file.mpp`
 
 ## Note
 
