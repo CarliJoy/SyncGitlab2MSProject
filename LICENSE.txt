@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2020 Carli
+Copyright (c) 2020 Carli* Freudenberg
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
