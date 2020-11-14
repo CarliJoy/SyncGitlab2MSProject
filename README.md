@@ -34,6 +34,11 @@ group. Problem is that accessing issues only by ID is just allowed for admins.
 ## Requirements
 This project runs only in an Windows Environment with Microsoft Project installed.
 
+**Please note:** This Script has been tested only mit Microsoft Project 2016.
+It cloud be, that some of the API has changed in newer versions. 
+If you run into any troubles with a new version, please open an 
+[Issue](https://github.com/CarliJoy/SyncGitlab2MSProject/issues/new). 
+ 
 ## Usage
 ```
 usage: sync_gitlab2msproject [-h] [--version] [-v] [-vv] [--gitlab-url GITLAB_URL] [--gitlab-token GITLAB_TOKEN] {project,group} gitlab_resource_id project_file
