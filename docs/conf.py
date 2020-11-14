@@ -16,6 +16,13 @@ import shutil
 __location__ = os.path.join(os.getcwd(), os.path.dirname(
     inspect.getfile(inspect.currentframe())))
 
+
+# Try to import win32com, otherwise use mocking
+try:
+    import win32com
+except ImportError:
+    sys.path.insert(0, os.path.join(__location__, '../mocking'))
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
