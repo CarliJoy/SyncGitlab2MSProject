@@ -1,7 +1,7 @@
 # Currently only format testing, so we can linux as it is better supported by travis
 # Note that for late integration tests we need windows
 os: "linux"
-dist: "xenial",
+dist: "xenial"
 language: python
 python:
   - "3.8"
