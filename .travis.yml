@@ -1,4 +1,7 @@
-sudo: false
+# Currently only format testing, so we can linux as it is better supported by travis
+# Note that for late integration tests we need windows
+os: "linux"
+dist: "xenial",
 language: python
 python:
   - "3.8"
@@ -6,7 +9,7 @@ virtualenv:
   system_site_packages: false
 
 install:
-  - pip install -u pip setuptools wheel
+  - pip install --upgrade pip setuptools wheel
   - pip install flake8-black
 
 script:
