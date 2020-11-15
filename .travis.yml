@@ -10,10 +10,11 @@ virtualenv:
 
 install:
   - pip install --upgrade pip setuptools wheel
-  - pip install flake8-black
+  - pip install --upgrade flake8 flake8-black mypy
 
 script:
   - flake8 src/ tests/
+  - mypy src/
 
 deploy:
   provider: pypi
