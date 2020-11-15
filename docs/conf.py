@@ -16,6 +16,11 @@ import shutil
 __location__ = os.path.join(os.getcwd(), os.path.dirname(
     inspect.getfile(inspect.currentframe())))
 
+import m2r2
+
+readme_rst_content = m2r2.parse_from_file(os.path.join(__location__, '..', 'README.md'))
+with open(os.path.join(__location__, 'README.rst'), 'w') as f:
+    f.write(readme_rst_content)
 
 # Try to import win32com, otherwise use mocking
 try:
@@ -76,6 +81,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
               'sphinx.ext.napoleon']
 extensions.append('recommonmark')
 
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -102,7 +108,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SyncGitlab2MSProject'
-copyright = u'2020, Carli'
+copyright = u'2020, Carli* Freudenberg'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
