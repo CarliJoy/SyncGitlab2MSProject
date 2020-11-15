@@ -126,7 +126,7 @@ class MSProject(Sequence):
     def get_task(self, task_nr: int) -> Optional["Task"]:
         return self.project.Tasks(task_nr + 1)
 
-    def __getitem__(self, i: int) -> Optional["Task"]:
+    def __getitem__(self, i: int) -> Sequence[Optional["Task"]]:
         if i >= len(self):
             raise IndexError("Out of tasks")
         if self.get_task(i) is None:

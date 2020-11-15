@@ -72,7 +72,7 @@ def update_task_with_issue_data(
                 task.deadline = issue.due_date
             if issue.has_tasks or task.percent_complete == 0:
                 task.percent_complete = issue.percentage_tasks_done
-            task.work = issue.time_estimated
+            task.work = int(issue.time_estimated)
             # Update duration in case it seems to be default
             if task.duration == DEFAULT_DURATION and task.estimated:
                 if task.work > 0:
@@ -83,7 +83,7 @@ def update_task_with_issue_data(
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
-        except [MSProjectValueSetError, win32com.universal.com_error] as e:
+        except (MSProjectValueSetError, win32com.universal.com_error) as e:
             logger.error(
                 f"FATAL: Could not sync issue {issue} to task {task}.\nError: {e}"
             )

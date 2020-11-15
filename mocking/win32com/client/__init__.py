@@ -1,5 +1,5 @@
 # https://docs.microsoft.com/de-de/office/vba/api/project.pjsavetype
-from typing import Iterable, Any
+from typing import Iterable, Any, Union, Sequence
 
 pjPromptSave = 2
 pjSave = 1
@@ -9,6 +9,11 @@ pjDoNotSave = 0
 class Task:
     def __getattribute__(self, item) -> Any:
         """A MS Task"""
+
+
+class TasksIterator(Iterable):
+    def __getitem__(self, item) -> Union["Task", Sequence["Task", None, None]]:
+        pass
 
 
 class MSProject_Project:
