@@ -55,9 +55,10 @@ def update_task_with_issue_data(
     else:
         parent_ids += [get_issue_ref_id(issue)]
 
-    if issue.moved_to_id:
+    if (moved_ref := issue.moved_reference) is not None:
+        assert moved_ref is not None
         try:
-            return update_task_with_issue_data(task, issue.moved_reference, parent_ids)
+            return update_task_with_issue_data(task, moved_ref, parent_ids)
         except MovedIssueNotDefined:
             logger.warning(
                 f"Issue {issue} was moved outside of context."
@@ -72,7 +73,7 @@ def update_task_with_issue_data(
                 task.deadline = issue.due_date
             if issue.has_tasks or task.percent_complete == 0:
                 task.percent_complete = issue.percentage_tasks_done
-            task.work = issue.time_estimated
+            task.work = int(issue.time_estimated)
             # Update duration in case it seems to be default
             if task.duration == DEFAULT_DURATION and task.estimated:
                 if task.work > 0:
@@ -83,7 +84,7 @@ def update_task_with_issue_data(
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
-        except [MSProjectValueSetError, win32com.universal.com_error] as e:
+        except (MSProjectValueSetError, win32com.universal.com_error) as e:
             logger.error(
                 f"FATAL: Could not sync issue {issue} to task {task}.\nError: {e}"
             )
@@ -111,15 +112,15 @@ def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
     # Find moved issues and reference them
     non_moved: List[IssueRef] = []
     for issue in issues:
-        if ref_id := issue.moved_to_id:
-            if ref_id in ref_id_to_issue:
+        if (ref_int_id := issue.moved_to_id) is not None:
+            if (ref_id := IssueRef(ref_int_id)) in ref_id_to_issue:
                 issue.moved_reference = ref_id_to_issue[ref_id]
         else:
             non_moved.append(get_issue_ref_id(issue))
 
     # get existing references and update them
     for task in tasks:
-        if ref_id := get_issue_ref_from_task(task):
+        if ref_id := get_issue_ref_from_task(task):  # type: ignore
             try:
                 issue = ref_id_to_issue[ref_id]
             except KeyError:

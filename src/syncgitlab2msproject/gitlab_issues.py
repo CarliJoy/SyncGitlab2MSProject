@@ -17,7 +17,7 @@ def get_user_identifier(user_dict: GitlabUserDict) -> str:
 
     keep as separate function to allow easier changes later if required
     """
-    return user_dict["name"]
+    return str(user_dict["name"])
 
 
 class Issue:
@@ -104,6 +104,8 @@ class Issue:
         """
         if self.is_closed:
             if self.moved_to_id is not None:
+                # Needed for
+                assert self._moved_reference is not None
                 return self._moved_reference.percentage_tasks_done
             return 100
         if not self.has_tasks:

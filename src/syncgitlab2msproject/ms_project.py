@@ -15,7 +15,7 @@ from win32com.universal import com_error
 from .funcions import raise_exception_if_not_datetime, convert_to_int_or_raise_exception
 from .exceptions import ClassNotInitiated, LoadingError, MSProjectValueSetError
 from .decorators import make_none_safe
-
+from .custom_types import ComMSProjectProject, ComMSProjectApplication
 
 logger = getLogger(f"{__package__}.{__name__}")
 
@@ -59,13 +59,15 @@ def get_project_path(ms_project) -> str:
     return ms_project.Path + "\\" + ms_project.Name
 
 
-class MSProject(Sequence):
+class MSProject(Sequence["Task"]):
     """MSProject class."""
 
     def __init__(self, doc_path: PathLike):
-        self.project = None
+        self.project: ComMSProjectProject = None
         self._close_after: Optional[bool] = None
-        self.mpp = win32com.client.Dispatch("MSProject.Application")
+        self.mpp: ComMSProjectApplication = win32com.client.Dispatch(
+            "MSProject.Application"
+        )
         self.doc_path: PathLike = doc_path
 
     def __repr__(self):
@@ -126,7 +128,8 @@ class MSProject(Sequence):
     def get_task(self, task_nr: int) -> Optional["Task"]:
         return self.project.Tasks(task_nr + 1)
 
-    def __getitem__(self, i: int) -> Optional["Task"]:
+    # TODO: Fix MYPY
+    def __getitem__(self, i: int) -> Optional["Task"]:  # type: ignore
         if i >= len(self):
             raise IndexError("Out of tasks")
         if self.get_task(i) is None:
@@ -188,7 +191,8 @@ class Task:
 
     @property
     def start(self) -> datetime:
-        return win2python_datetime(self._get_task().Start)
+        assert (val := win2python_datetime(self._get_task().Start)) is not None
+        return val
 
     @start.setter
     def start(self, value: datetime):
@@ -197,7 +201,8 @@ class Task:
 
     @property
     def finish(self) -> datetime:
-        return win2python_datetime(self._get_task().Finish)
+        assert (val := win2python_datetime(self._get_task().Finish)) is not None
+        return val
 
     @finish.setter
     def finish(self, value: datetime):

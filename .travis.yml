@@ -5,11 +5,15 @@ python:
 - '3.8'
 virtualenv:
   system_site_packages: false
+
 install:
-- pip install --upgrade pip setuptools wheel
-- pip install flake8-black
+  - pip install --upgrade pip setuptools wheel
+  - pip install --upgrade flake8 flake8-black mypy
+
 script:
-- flake8 src/ tests/
+  - flake8 src/ tests/
+  - mypy src/
+
 deploy:
   provider: pypi
   username: __token__

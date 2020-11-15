@@ -1,8 +1,10 @@
 import functools
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, TypeVar
+
+T = TypeVar("T")
 
 
-def make_none_safe(func: Callable[..., Any]) -> Callable[..., Optional[Any]]:
+def make_none_safe(func: Callable[..., T]) -> Callable[..., Optional[T]]:
     """
     Make sure functions will give None if the first argument is none
     """

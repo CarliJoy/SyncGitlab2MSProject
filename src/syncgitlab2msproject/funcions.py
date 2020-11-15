@@ -23,7 +23,7 @@ def convert_to_int_or_raise_exception(value: Any) -> int:
     """
     try:
         return int(value)
-    except [ValueError, TypeError] as e:
+    except (ValueError, TypeError) as e:
         raise MSProjectValueSetError(
             f"Expected a value that can be converted to int, but "
             f"but value '{value}' of type {type(value)} can't be converted: {e}"

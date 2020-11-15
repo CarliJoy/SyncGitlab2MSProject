@@ -1,5 +1,5 @@
 # https://docs.microsoft.com/de-de/office/vba/api/project.pjsavetype
-from typing import Iterable, Any
+from typing import Iterable, Any, Union, Sequence, List
 
 pjPromptSave = 2
 pjSave = 1
@@ -10,6 +10,16 @@ class Task:
     def __getattribute__(self, item) -> Any:
         """A MS Task"""
 
+
+class TasksIterator(Iterable):
+    def __getitem__(self, item) -> Union["Task", Sequence["Task"]]:
+        pass
+
+    def __iter__(self):
+        pass
+
+    def Add(self) -> Task:
+        return Task()
 
 class MSProject_Project:
     """Mocking Class for
@@ -27,8 +37,8 @@ class MSProject_Project:
         return "filename.mpp"
 
     @property
-    def Tasks(self) -> Iterable[Task]:
-        return []
+    def Tasks(self) -> TasksIterator:
+        return TasksIterator()
 
 
 class COMObject_MSProject_Application:
