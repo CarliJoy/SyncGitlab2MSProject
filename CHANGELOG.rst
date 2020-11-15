@@ -2,9 +2,15 @@
 Changelog
 =========
 
-Version 0.1
-===========
+Version 0.0.2
+=============
+- Documentation Only Changes
+    - Add Badges
+    - Import Readme to documentation
+    - Allow build of documentation even without pywin32 installed
+    - Use ReadTheDoc Sphinx Theme
 
-- Feature A added
-- FIX: nasty bug #1729 fixed
-- add your changes here!
+Version 0.0.1
+=============
+
+- First Release

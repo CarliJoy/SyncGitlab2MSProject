@@ -43,8 +43,10 @@ sdist/*
 docs/api/*
 docs/_rst/*
 docs/_build/*
+docs/README.rst
 cover/*
 MANIFEST
 
 # Per-project virtualenvs
 .venv*/
+

@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* Carli <Carl.Freudenberg@enercon.de>
+* Carli* Freudenberg <kound@posteo.de>
