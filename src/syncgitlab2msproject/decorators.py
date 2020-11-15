@@ -1,5 +1,5 @@
 import functools
-from typing import Callable, Any, Optional, TypeVar
+from typing import Callable, Optional, TypeVar
 
 T = TypeVar("T")
 
