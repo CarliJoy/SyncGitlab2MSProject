@@ -1,24 +1,19 @@
-# Currently only format testing, so we can linux as it is better supported by travis
-# Note that for late integration tests we need windows
-os: "linux"
-dist: "xenial"
+os: linux
+dist: xenial
 language: python
 python:
-  - "3.8"
+- '3.8'
 virtualenv:
   system_site_packages: false
-
 install:
-  - pip install --upgrade pip setuptools wheel
-  - pip install flake8-black
-
+- pip install --upgrade pip setuptools wheel
+- pip install flake8-black
 script:
-  - flake8 src/ tests/
-
+- flake8 src/ tests/
 deploy:
   provider: pypi
-  username: "__token__"
-  password: 
-    secure: "Dq8UBWCGbdVbfk+yXl6+g/OB26SJbfF5BLeXexLOdopT7F3QKqGZIv7RO2ns2Vzz5U8u+U2Kqg6ijVOlGRNXDadg7PIxbEQIrDumnT9F1gwxdJzhSF0Pk3JhYTDtq2b48PXrMAGFW2vAWGaGEk7USX6GaEgRK903Il/lPSs709NnveEGM/IsYAWgoc5a36AjQRgMcGpqDB+Q/IM8zZJVMUH3ZXswaUQW9d0jXLhlQXfasBikQ3cHNK8CnrQrRD0GyA1zxHQqT6VaFldA+2zDSIF+efqyqx8c/CYtzKQegQ2PlD/vXQnxgG2s7dBqMPuC3PH233t56y0fSIP2I9UWyvXb1364lpbc6Oq44VRXQEr/SG9u910G48GB5JHjJfmfOkZBli66Y0cON+MUbYKMDmSCMWX2ccQRA9YQzhVjnBCjmlcXzhhNZkQZz3eOsW6dnD7leIELuqGeUAXijbhsjEMzFVBOEDa+HwIDgBl8DxC0p0O/3MJXCUOeGCfTDUzKR3DrP7gSICc93SPYgtuQF67MbNa2DPabZEmvLqKDm3Ij+TBlKnvkzTYTrYUVqz16zYBIhti4TK7jtU8uju3kPzMZD0+V6Yy49d2ksKpR3Kt4U+hk4GUTBNSqN7IWjbNT/YJaaSHtbIdyksU0L1A3f5sbGYGajwf6cP35iN2opLk="
+  username: __token__
+  password:
+    secure: H4mFMbuUxohjAcDDbdyuCiMmd1H5EZxzDyiCGzZsW6LH1xYz5vo7eQDc3XlRhKgL26gvQP/P42oqt1mRjj33p6jLel0lzyLm3vDUUgg5PX/wasJEA1CGmM0+MVVqDWW4aRa1nkSz4Xu79uQYjHiV7KDwWMolfxrcs7vW+B8HRoCh0eQnCAHvKb8VhvUdhNS2vAO9sCSiWEzb1/u/5EJ71KMpT6T1WeySDwj9tgcpcobXItOuUk0JJIrYqQZWyt2OWDEijD6rjK0BHB0TqrXDm4xBdpv1q2KGIhY8t4635iA3Qu42Ok+FzLR+Cxm9qmVS1YQl5vNanJrvFZOcW/TafJZWYeOtPU4Crb+DvnstpeY/RvN77v4PQXj+31yPi3ug1Gse3Y/biMkQvOLCZSylUOJ5LXg4XpuedK2zpyIzAYIR3VSOobTedH9d8/3x5O3u1E7N7NgEyYByrJZI5UDmk5ZvVcX+iDYbtszG3q9EH33ZzdFvjf3UIIX+dBgZKkNt2WG6+ms+cjPN16eiAYg511QDZT3NXClxEIQXi0liVVBRZLMPzyqcTuNUM0fO5nv+FaAP3vry7nHY+l9hf11aQiwJ8uo4iSV/cIovVCVQvJrYuHpdqITh0I93QaHuSio/e7PL3wIZ9pcdBFzXAEeS79+zQNtCVwe3Tc65AlPo4fQ=
   on:
     tags: true
