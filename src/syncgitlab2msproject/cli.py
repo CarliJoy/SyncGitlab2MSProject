@@ -15,6 +15,8 @@ __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "mit"
 
+from syncgitlab2msproject.custom_types import WebURL
+
 from syncgitlab2msproject.gitlab_issues import (
     get_project_issues,
     get_gitlab_class,
@@ -142,7 +144,7 @@ def main(args):
         exit(64)
     else:
         with MSProject(ms_project_file.absolute()) as tasks:
-            sync_gitlab_issues_to_ms_project(tasks, issues)
+            sync_gitlab_issues_to_ms_project(tasks, issues, WebURL(args.gitlab_url))
     _logger.info("Finished syncing")
 
 

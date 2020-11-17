@@ -59,7 +59,7 @@ def get_project_path(ms_project) -> str:
     return ms_project.Path + "\\" + ms_project.Name
 
 
-class MSProject(Sequence["Task"]):
+class MSProject(Sequence[Optional["Task"]]):
     """
     Python Wrapper around the Communication with MS Project
 

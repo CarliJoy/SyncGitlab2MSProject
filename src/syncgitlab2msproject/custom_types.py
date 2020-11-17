@@ -8,3 +8,4 @@ IssueRef = NewType("IssueRef", int)
 # Are Dynamic Types, therefore any
 ComMSProjectProject = Any
 ComMSProjectApplication = Any
+WebURL = NewType("WebURL", str)

@@ -1,5 +1,5 @@
 # https://docs.microsoft.com/de-de/office/vba/api/project.pjsavetype
-from typing import Iterable, Any, Union, Sequence, List
+from typing import Iterable, Any, Union, Sequence
 
 pjPromptSave = 2
 pjSave = 1
@@ -20,6 +20,7 @@ class TasksIterator(Iterable):
 
     def Add(self) -> Task:
         return Task()
+
 
 class MSProject_Project:
     """Mocking Class for

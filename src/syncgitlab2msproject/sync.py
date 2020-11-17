@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 from logging import getLogger
 
 import win32com.universal
+from syncgitlab2msproject.custom_types import WebURL
 
 from .exceptions import MovedIssueNotDefined, MSProjectValueSetError
 from .gitlab_issues import Issue
@@ -16,7 +17,19 @@ DEFAULT_DURATION = 8 * 60
 
 
 def get_issue_ref_id(issue: Issue) -> IssueRef:
+    """
+    Return the ID of an gitlab issue
+
+    Note the
+    """
     return IssueRef(issue.id)
+
+
+def get_issue_web_url(issue: Issue) -> WebURL:
+    """
+    Get the web url from an gitlab issue
+    """
+    return WebURL(issue.web_url)
 
 
 def set_issue_ref_to_task(task: Task, issue: Issue) -> None:
@@ -26,11 +39,30 @@ def set_issue_ref_to_task(task: Task, issue: Issue) -> None:
     )
 
 
-def get_issue_ref_from_task(task: Task) -> Optional[IssueRef]:
+def get_issue_ref_from_task(task: Optional[Task]) -> Optional[IssueRef]:
     """get reference to gitlab issues from MS Project task"""
-    if task and task.text30 and task.text30.startswith(GL_PREFIX):
+    if task is not None and task.text30 and task.text30.startswith(GL_PREFIX):
         values = task.text30[len(GL_PREFIX) :].split(";")
         return IssueRef(int(values[0]))
+    return None
+
+
+def is_gitlab_hyperlink(url: WebURL, gitlab_url: WebURL) -> bool:
+    return url.startswith(gitlab_url)
+
+
+def get_weburl_from_task(task: Optional[Task], gitlab_url: WebURL) -> Optional[WebURL]:
+    """
+    Get the weburl from MS Project Task (is saved as hyperlink)
+    """
+    if task is not None:
+        if (url := task.hyperlink_address) is not None:
+            url = WebURL(url)
+        # If not as hyperlink we also look in task.text29 field
+        elif (url := task.text29) is not None:
+            url = WebURL(url)
+        if is_gitlab_hyperlink(url, gitlab_url):
+            return url
     return None
 
 
@@ -81,6 +113,7 @@ def update_task_with_issue_data(
             task.actual_work = issue.time_spent_total
             task.hyperlink_name = "Open in Gitlab"
             task.hyperlink_address = issue.web_url
+            task.text29 = issue.web_url
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
@@ -100,12 +133,15 @@ def add_issue_as_task_to_project(tasks: MSProject, issue: Issue):
     update_task_with_issue_data(task, issue)
 
 
-def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
+def sync_gitlab_issues_to_ms_project(
+    tasks: MSProject, issues: List[Issue], gitlab_url: WebURL
+):
     """
 
     Args:
         tasks: MS Project Tasks that will be synchronized
         issues:  List of Gitlab Issues
+        gitlab_url: the gitlab istance url to check url found in MS project against
 
     Returns:
 
@@ -116,6 +152,10 @@ def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
     # Create Dictionary of all IDs to find moved ones and relate existing
     ref_id_to_issue: Dict[IssueRef, Issue] = {
         get_issue_ref_id(issue): issue for issue in issues
+    }
+    # We also try to sync according to the weburl but only in a second step
+    web_url_to_issue: Dict[WebURL, Issue] = {
+        get_issue_web_url(issue): issue for issue in issues
     }
 
     # Find moved issues and reference them
@@ -129,12 +169,21 @@ def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
 
     # get existing references and update them
     for task in tasks:
-        if (ref_id := get_issue_ref_from_task(task)) is not None:  # type: ignore
+        if task is None:
+            continue
+        array_to_check = None
+        if (ref_id2 := get_issue_ref_from_task(task)) is not None:
+            array_to_check = ref_id_to_issue
+        # if the normal ID was not found try if a webtask was found
+        elif (ref_id2 := get_weburl_from_task(task, gitlab_url)) is not None:
+            array_to_check = web_url_to_issue
+
+        if array_to_check is not None:
             try:
-                issue = ref_id_to_issue[ref_id]
+                issue = ref_id_to_issue[ref_id2]
             except KeyError:
                 logger.warning(
-                    f"Task {task} refers to Issue {ref_id} which was not loaded."
+                    f"Task {task} refers to Issue {ref_id2} which was not loaded."
                     f" --> Ignored."
                 )
             else:

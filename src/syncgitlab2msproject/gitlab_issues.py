@@ -68,6 +68,9 @@ class Issue:
     # **************************************************************
     @property
     def id(self) -> int:
+        """
+        The id of an issue - it seems to be unique within an installation
+        """
         return self.obj.id
 
     @property
@@ -176,7 +179,7 @@ class Issue:
     @property
     def web_url(self) -> str:
         """
-        give the url from which
+        give the url from which the issue can be accessed
         """
         return self.obj.web_url
 
