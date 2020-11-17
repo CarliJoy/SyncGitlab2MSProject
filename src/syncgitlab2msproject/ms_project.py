@@ -60,7 +60,11 @@ def get_project_path(ms_project) -> str:
 
 
 class MSProject(Sequence["Task"]):
-    """MSProject class."""
+    """
+    Python Wrapper around the Communication with MS Project
+
+    Offers at task list
+    """
 
     def __init__(self, doc_path: PathLike):
         self.project: ComMSProjectProject = None

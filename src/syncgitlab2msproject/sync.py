@@ -101,6 +101,15 @@ def add_issue_as_task_to_project(tasks: MSProject, issue: Issue):
 
 
 def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
+    """
+
+    Args:
+        tasks: MS Project Tasks that will be synchronized
+        issues:  List of Gitlab Issues
+
+    Returns:
+
+    """
     # Keep track of already synced issues
     synced: List[IssueRef] = []
 
@@ -120,7 +129,7 @@ def sync_gitlab_issues_to_ms_project(tasks: MSProject, issues: List[Issue]):
 
     # get existing references and update them
     for task in tasks:
-        if ref_id := get_issue_ref_from_task(task):  # type: ignore
+        if (ref_id := get_issue_ref_from_task(task)) is not None:  # type: ignore
             try:
                 issue = ref_id_to_issue[ref_id]
             except KeyError:

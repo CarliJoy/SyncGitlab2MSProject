@@ -159,14 +159,25 @@ class Issue:
 
     @property
     def assignees(self) -> List[str]:
+        """
+        list of Gitlab Assignees.
+
+        Note in the community edition only one assignee is possible
+        """
         return [get_user_identifier(user) for user in self.obj.assignees]
 
     @property
     def labels(self) -> List[str]:
+        """
+        list of labels
+        """
         return self.obj.labels
 
     @property
     def web_url(self) -> str:
+        """
+        give the url from which
+        """
         return self.obj.web_url
 
 
