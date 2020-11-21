@@ -132,6 +132,7 @@ def update_task_with_issue_data(
 
 def add_issue_as_task_to_project(tasks: MSProject, issue: Issue):
     task = tasks.add_task(issue.title)
+    logger.info(f"Created {task} as it was missing for issue, now syncing it.")
     # Add a setting to allow forcing outline level on new tasks
     # task.outline_level = 1
     update_task_with_issue_data(task, issue)
@@ -254,6 +255,7 @@ def sync_gitlab_issues_to_ms_project(
         array_to_check = None
         ref_issue = find_related_issue(task, find_issue, gitlab_url)
         if ref_issue is not None:
+            logger.info(f"Syncing {ref_issue} into {task}")
             synced += update_task_with_issue_data(task, ref_issue)
 
     # adding everything that was not synced and is not duplicate
