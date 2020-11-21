@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject.svg?branch=master)](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject)
 [![PyPi Version](https://img.shields.io/pypi/v/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
-[![PyPi Downloads](https://img.shields.io/pypi/dm/SyncGitlab2MSProject.svg?maxAge=2592000?style=plastic)]()
+[![PyPi Downloads](https://img.shields.io/pypi/dm/SyncGitlab2MSProject.svg?maxAge=2592000?style=plastic)](https://pypistats.org/packages/syncgitlab2msproject)
 [![Python Versions](https://img.shields.io/pypi/pyversions/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
 [![Wheel Build](https://img.shields.io/pypi/wheel/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
 [![Project Status](https://img.shields.io/pypi/status/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
@@ -8,7 +8,6 @@
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/syncgitlab2msproject/badge/?version=latest)](https://syncgitlab2msproject.readthedocs.io/en/latest/?badge=latest)
-
 # SyncGitlab2MSProject
 
 Sync Gitlab Issues into a Microsoft Project File.
@@ -79,7 +78,7 @@ the following VBA Script as a workaround.
 Simply add the VBA script to your Ribbon and it will open all Hyperlinks of the 
 selected tasks.
 
-```vba
+```vbscript
 Option Explicit
 
 Private Declare Function ShellExecute _
