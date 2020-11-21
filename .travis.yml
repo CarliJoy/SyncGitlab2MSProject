@@ -17,7 +17,7 @@ script:
 deploy:
   provider: pypi
   username: __token__
-  server: https://upload.pypi.org/legacy
+  server: https://upload.pypi.org/legacy/
   distributions: sdist bdist_wheel
   password:
     secure: Dg5R6VYX8hQ+Dyun52ZVNyq78H6m/YJmGgLARmrkjqLSYqqgN4w2LSp/ScSt7qlWs5wm9h9JY7Y8uJIgwu4CN9bT8rwLlg8CBuaS4cL7Elpsf6LQ+ZFS4S4VmEyEYuTsDdIN+wlRkoFn5pK7fpl2Dp/BLpEkgONUb0sAlFPsTqKbwQtwZAaAMfX1okyaRmUtH+76Gf9PRO5y7gIG5jMMTzTlEk79m2urjOmHP/h96jcK634s8uwCyBMxjLqp5zH/gGCAOStLSASYouZKHEN2ExWppTMhUymmmz26gJsJLYZXNDPnWER9zOIyEC0qur3saLEEcCeOjvxBJBcjY4WSQWMpK69HIYDl9C2/kIZiR7x40QnvrtcyN5miYyziaaBmj4HM0FwQ3E8p2zvIg4sjm7LkPjBDd3HKqg+Tq2DPBt+T2wQyJjkPtcmiJUBYlU//PEOTmiV+fHI+XuJEFiWu19hgl3OP92m4Dge+j9uj+snan8BwairtPE4PqJ3PJu/0Fmg5JQpRJJUeS/1J9SGGO14PhwtYMHxtM1Jo7m7C3CXcKso3LUY3+6QTavxA2usTmMISwsrZMQDIlUi6zdSlahzvi2Um055E+ZU4rYNiPrrwwqWWKvfwNGRoDWuS589j5K1SIu2+mpk0B0ng5b9m/sks3/5DElK94hl5olr4SJg=
