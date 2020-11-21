@@ -264,7 +264,8 @@ def sync_gitlab_issues_to_ms_project(
             synced += update_task_with_issue_data(task, ref_issue)
         else:
             logger.info(
-                f"Not Syncing {task} as a not reference to an gitlab issue could be found"
+                f"Not Syncing {task} as a not reference to an gitlab "
+                f"issue could be found"
             )
     # adding everything that was not synced and is not duplicate
     for ref_id in non_moved:
