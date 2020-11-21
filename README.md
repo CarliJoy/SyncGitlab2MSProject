@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject.svg?branch=master)](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject)
+[![Build Status](https://travis-ci.com/CarliJoy/SyncGitlab2MSProject.svg?branch=master&status=created)](https://travis-ci.com/CarliJoy/SyncGitlab2MSProject)
 [![PyPi Version](https://img.shields.io/pypi/v/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
 [![PyPi Downloads](https://img.shields.io/pypi/dm/SyncGitlab2MSProject.svg?maxAge=2592000?style=plastic)](https://pypistats.org/packages/syncgitlab2msproject)
 [![Python Versions](https://img.shields.io/pypi/pyversions/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
