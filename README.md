@@ -8,7 +8,6 @@
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/syncgitlab2msproject/badge/?version=latest)](https://syncgitlab2msproject.readthedocs.io/en/latest/?badge=latest)
-https://pypistats.org/packages/syncgitlab2msproject
 # SyncGitlab2MSProject
 
 Sync Gitlab Issues into a Microsoft Project File.
