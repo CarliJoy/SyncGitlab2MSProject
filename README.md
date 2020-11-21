@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject.svg?branch=master)](https://travis-ci.org/CarliJoy/SyncGitlab2MSProject)
-[![](https://img.shields.io/pypi/v/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
-[![](https://img.shields.io/pypi/pyversions/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
-[![](https://img.shields.io/pypi/wheel/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
-[![](https://img.shields.io/pypi/status/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![PyPi Version](https://img.shields.io/pypi/v/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![PyPi Downloads](https://img.shields.io/pypi/dm/SyncGitlab2MSProject.svg?maxAge=2592000?style=plastic)]()
+[![Python Versions](https://img.shields.io/pypi/pyversions/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![Wheel Build](https://img.shields.io/pypi/wheel/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
+[![Project Status](https://img.shields.io/pypi/status/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
 [![Code Style Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,9 +11,9 @@
 
 # SyncGitlab2MSProject
 
-Sync Gitlab Issues with a Microsoft Project File.
+Sync Gitlab Issues into a Microsoft Project File.
 Use it if you use MS Project for the general project planning but want to keep
-the Issues in Gitlab as a part of project planning to follow the process.
+the Issues in Gitlab as a part of your project planning to follow the process progess.
 
 Currently only Information from Gitlab Issues are inserted and updated within the
 Project File. Changes in synchronised fields will be overwritten.
@@ -25,8 +26,9 @@ The following MS Project attributes are synced (overwritten) from gitlab:
   - Actual Work (from Time Spent)
   - Percent Complete (if Tasks given for issue, otherwise only 0% and 100% [for closed])
   - Text28 (the list of label)
+  - Text29 (the URL to gitlab issue)
   - Text30 (the reference to the issue is stored there)
-  - Hyperlink (link to gitlab issue - note: somehow ms project is not handling the links correctly) 
+  - Hyperlink (link/URL to gitlab issue) 
 
 Not yet implemented but planned:
   - Resources (from Assigned)
@@ -69,6 +71,37 @@ optional arguments:
 2. Install the package `pipx install SyncGitlab2MSProject` (or use `pip` if you don't like pipx)
 3. Push the gitlab Issue to your MS Project file:
 `sync_gitlab2msproject --gitlab-url https://gitlab.company.com --gitlab-token <your_token> group <your_group_id> ms_project_file.mpp`
+
+## Open Hyplerlink Problems
+If you have troubles that the wrong issues are opened once you click on a Hyperlink use 
+the following VBA Script as a workaround.
+Simply add the VBA script to your Ribbon and it will open all Hyperlinks of the 
+selected tasks.
+
+```vba
+Option Explicit
+
+Private Declare Function ShellExecute _
+  Lib "shell32.dll" Alias "ShellExecuteA" ( _
+  ByVal hWnd As Long, _
+  ByVal Operation As String, _
+  ByVal Filename As String, _
+  Optional ByVal Parameters As String, _
+  Optional ByVal Directory As String, _
+  Optional ByVal WindowStyle As Long = vbMinimizedFocus _
+  ) As Long
+
+Public Sub OpenUrls()
+   
+    Dim lSuccess As Long
+    Dim T As Task
+    Dim Names As String
+    For Each T In ActiveSelection.Tasks
+        lSuccess = ShellExecute(0, "Open", T.HyperlinkAddress)
+    Next T
+End Sub
+
+```
 
 ## Note
 
