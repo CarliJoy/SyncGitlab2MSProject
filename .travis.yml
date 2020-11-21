@@ -1,23 +1,22 @@
 os: linux
-dist: xenial
+virt: lxd
+dist: focal
+group: edge
 language: python
 python:
 - '3.8'
 virtualenv:
   system_site_packages: false
-
 install:
-  - pip install --upgrade pip setuptools wheel
-  - pip install --upgrade flake8 flake8-black mypy
-
+- pip install --upgrade pip setuptools wheel
+- pip install --upgrade flake8 flake8-black mypy
 script:
-  - flake8 src/ tests/
-  - mypy src/
-
+- flake8 src/ tests/
+- mypy src/
 deploy:
   provider: pypi
   username: __token__
   password:
-    secure: H4mFMbuUxohjAcDDbdyuCiMmd1H5EZxzDyiCGzZsW6LH1xYz5vo7eQDc3XlRhKgL26gvQP/P42oqt1mRjj33p6jLel0lzyLm3vDUUgg5PX/wasJEA1CGmM0+MVVqDWW4aRa1nkSz4Xu79uQYjHiV7KDwWMolfxrcs7vW+B8HRoCh0eQnCAHvKb8VhvUdhNS2vAO9sCSiWEzb1/u/5EJ71KMpT6T1WeySDwj9tgcpcobXItOuUk0JJIrYqQZWyt2OWDEijD6rjK0BHB0TqrXDm4xBdpv1q2KGIhY8t4635iA3Qu42Ok+FzLR+Cxm9qmVS1YQl5vNanJrvFZOcW/TafJZWYeOtPU4Crb+DvnstpeY/RvN77v4PQXj+31yPi3ug1Gse3Y/biMkQvOLCZSylUOJ5LXg4XpuedK2zpyIzAYIR3VSOobTedH9d8/3x5O3u1E7N7NgEyYByrJZI5UDmk5ZvVcX+iDYbtszG3q9EH33ZzdFvjf3UIIX+dBgZKkNt2WG6+ms+cjPN16eiAYg511QDZT3NXClxEIQXi0liVVBRZLMPzyqcTuNUM0fO5nv+FaAP3vry7nHY+l9hf11aQiwJ8uo4iSV/cIovVCVQvJrYuHpdqITh0I93QaHuSio/e7PL3wIZ9pcdBFzXAEeS79+zQNtCVwe3Tc65AlPo4fQ=
+    secure: Y3TvKWQLMdDr1U7v/hperHCwnEOMqP+UIdxH0iUgkngYfjtldWLSRQa299Takn3nlAEAaBiHlbwolPS8t4Wv19lmVDJNKhOzsPanLCZQ9okbg1AZUw1A0fcDwdiKnml4KWOT+tl8NfPCsrhrA5Ui9NVARAkasBRl9IiGo9b8oFV/muFJMAmN4ZA4L0NSHgf/QgXO/Ws4RrmuAF2uzeoWondA23tbhIsrEPBxF02V4E6uQtBsfJ1DdkVW5vw9RXRyGtlDbxoPTf1txRwNRGlh6FlFhWQhlEFnzHKRBtwW5Bd8B+diYjMATPL2nnoaK4IB2nXdFDmJPjZVbeEn77ocjG6PRQ+WC0dXde7VqR3RITtJYSSkUKAvYQLydLaCOh5fGdyBU2WpzrktJpS5RftuR2YyrhntqsBfoBdB0AFJZD/i3l0ryW85Bcs2iHiAF85ctDoHG90k5eE9BEQ7BVJWYmOLM282Hf2ZmcxcfQAFjqeafTK8aU/wjv6efo6p8wt6HI10Mdkck0uZ+9t+hg7HyOYV/8F5bMWcpR5dFpTD1+TwGKOQ6xWW5pE1f4ytM6EUn8nZDYPPmvQeDERTRiOkeLy2PQrBMpc+Rtx1VRO6lnGMaAq8j0P2ZOYw9tdo3nlf04iHvOa1S1D0XOtFfg0nrxbmbqbSoQb7ytq5usvOSVk=
   on:
     tags: true

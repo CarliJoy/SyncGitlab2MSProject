@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 0.0.4
+=============
+- First auto release with travis
+    - Use `Travis AWS`_
+    - Use travis.com instead of travis.org
+
 Version 0.0.3
 =============
 - Also use Hyperlink or Text29 URL field to find related issues
@@ -20,3 +26,5 @@ Version 0.0.1
 =============
 
 - First Release
+
+.. _Travis AWS: https://blog.travis-ci.com/2020-09-11-arm-on-aws
