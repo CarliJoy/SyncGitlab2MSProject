@@ -252,7 +252,6 @@ def sync_gitlab_issues_to_ms_project(
     for task in tasks:
         if task is None:
             continue
-        array_to_check = None
         ref_issue = find_related_issue(task, find_issue, gitlab_url)
         if ref_issue is not None:
             logger.info(f"Syncing {ref_issue} into {task}")
