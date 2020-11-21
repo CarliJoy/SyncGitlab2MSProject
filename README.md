@@ -25,7 +25,7 @@ The following MS Project attributes are synced (overwritten) from gitlab:
   - Work (from Time Estimated)
   - Actual Work (from Time Spent)
   - Percent Complete (if Tasks given for issue, otherwise only 0% and 100% [for closed])
-  - Text28 (the list of label)
+  - Text28 (the list of labels)
   - Text29 (the URL to gitlab issue)
   - Text30 (the reference to the issue is stored there)
   - Hyperlink (link/URL to gitlab issue) 
@@ -35,6 +35,7 @@ Not yet implemented but planned:
 
 Moved issues will be handled if the group selected and the issue was moved within the 
 group. Problem is that accessing issues only by ID is just allowed for admins.
+
 ## Requirements
 This project runs only in an Windows Environment with Microsoft Project installed.
 
