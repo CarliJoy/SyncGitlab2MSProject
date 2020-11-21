@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 0.0.5
+=============
+- was only required to get travis to work, now it does!
+
 Version 0.0.4
 =============
 - First auto release with travis
