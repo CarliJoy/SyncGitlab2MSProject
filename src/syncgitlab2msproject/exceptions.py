@@ -6,6 +6,10 @@ class MovedIssueNotDefined(GitlabSyncError):
     pass
 
 
+class IssueReferenceDuplicated(GitlabSyncError):
+    pass
+
+
 class MSProjectSyncError(ValueError):
     pass
 

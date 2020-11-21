@@ -1,10 +1,14 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, overload
 from logging import getLogger
 
 import win32com.universal
 from syncgitlab2msproject.custom_types import WebURL
 
-from .exceptions import MovedIssueNotDefined, MSProjectValueSetError
+from .exceptions import (
+    MovedIssueNotDefined,
+    MSProjectValueSetError,
+    IssueReferenceDuplicated,
+)
 from .gitlab_issues import Issue
 from .ms_project import Task, MSProject
 from .custom_types import IssueRef
@@ -133,6 +137,87 @@ def add_issue_as_task_to_project(tasks: MSProject, issue: Issue):
     update_task_with_issue_data(task, issue)
 
 
+class IssueFinder:
+    def __init__(self, issues: List[Issue]):
+        # Create Dictionary of all IDs to find moved ones and relate existing
+        self.ref_id_to_issue: Dict[IssueRef, Issue] = {}
+        # We also try to sync according to the weburl but only in a second step
+        self.web_url_to_issue: Dict[WebURL, Issue] = {}
+        for issue in issues:
+            """ Set up all references to locate later on"""
+            ref_id = get_issue_ref_id(issue)
+            if ref_id in self.ref_id_to_issue:
+                raise IssueReferenceDuplicated(
+                    f"Reference ID {ref_id} was already defined! "
+                    f"{self.ref_id_to_issue[ref_id]} and {issue} "
+                    f"share the same Reference ID"
+                )
+            self.ref_id_to_issue[ref_id] = issue
+
+            web_url = get_issue_web_url(issue)
+            if web_url in self.web_url_to_issue:
+                raise IssueReferenceDuplicated(
+                    f"Web URL {web_url} was already defined! "
+                    f"{self.web_url_to_issue[web_url]} and {issue} "
+                    f"share the same Web URL"
+                )
+            self.web_url_to_issue[web_url] = issue
+
+    # Overload to make mypy aware of the fact that only None is given
+    # once the id is none
+    @overload
+    def by_ref_id(self, ref_id: IssueRef) -> Issue:
+        ...
+
+    @overload
+    def by_ref_id(self, ref_id: None) -> None:
+        ...
+
+    def by_ref_id(self, ref_id: Optional[IssueRef]) -> Optional[Issue]:
+        """
+        Give related issue if ref_id is set and the issue is found
+        If an invalid reference is given throw
+        :exceptions KeyError
+        """
+        if ref_id is None:
+            return None
+        return self.ref_id_to_issue[ref_id]
+
+    def by_web_url(self, web_url: Optional[WebURL]) -> Optional[Issue]:
+        """
+        Give related issue if weburl is set and the issue is found,
+        If an invalid web_url is given throw
+        :exceptions KeyError
+        """
+        if web_url is None:
+            return None
+        return self.web_url_to_issue[web_url]
+
+
+def find_related_issue(
+    task: Task, find_issue: IssueFinder, gitlab_url: WebURL
+) -> Optional[Issue]:
+    try:
+        if (issue := find_issue.by_ref_id(get_issue_ref_from_task(task))) is not None:
+            return issue
+    except KeyError as key:
+        logger.warning(
+            f"Task {task} refers to Issue with ID {key} which was not found in ."
+            f"the issues loaded from gitlab --> Ignored this reference"
+        )
+    try:
+        if (
+            issue := find_issue.by_web_url(get_weburl_from_task(task, gitlab_url))
+        ) is not None:
+            return issue
+    except KeyError as key:
+        logger.warning(
+            f"Task {task} refers to Web url {key} which was not found in ."
+            f"the issues loaded from gitlab --> Ignored this reference"
+        )
+    return None
+
+
 def sync_gitlab_issues_to_ms_project(
     tasks: MSProject, issues: List[Issue], gitlab_url: WebURL
 ):
@@ -146,24 +231,19 @@ def sync_gitlab_issues_to_ms_project(
     Returns:
 
     """
+    ref_issue: Optional[Issue]
     # Keep track of already synced issues
     synced: List[IssueRef] = []
 
-    # Create Dictionary of all IDs to find moved ones and relate existing
-    ref_id_to_issue: Dict[IssueRef, Issue] = {
-        get_issue_ref_id(issue): issue for issue in issues
-    }
-    # We also try to sync according to the weburl but only in a second step
-    web_url_to_issue: Dict[WebURL, Issue] = {
-        get_issue_web_url(issue): issue for issue in issues
-    }
+    # create finder
+    find_issue = IssueFinder(issues)
 
     # Find moved issues and reference them
     non_moved: List[IssueRef] = []
     for issue in issues:
         if (ref_int_id := issue.moved_to_id) is not None:
-            if (ref_id := IssueRef(ref_int_id)) in ref_id_to_issue:
-                issue.moved_reference = ref_id_to_issue[ref_id]
+            if (ref_issue := find_issue.by_ref_id(IssueRef(ref_int_id))) is not None:
+                issue.moved_reference = ref_issue
         else:
             non_moved.append(get_issue_ref_id(issue))
 
@@ -172,24 +252,12 @@ def sync_gitlab_issues_to_ms_project(
         if task is None:
             continue
         array_to_check = None
-        if (ref_id2 := get_issue_ref_from_task(task)) is not None:
-            array_to_check = ref_id_to_issue
-        # if the normal ID was not found try if a webtask was found
-        elif (ref_id2 := get_weburl_from_task(task, gitlab_url)) is not None:
-            array_to_check = web_url_to_issue
-
-        if array_to_check is not None:
-            try:
-                issue = ref_id_to_issue[ref_id2]
-            except KeyError:
-                logger.warning(
-                    f"Task {task} refers to Issue {ref_id2} which was not loaded."
-                    f" --> Ignored."
-                )
-            else:
-                synced += update_task_with_issue_data(task, issue)
+        ref_issue = find_related_issue(task, find_issue, gitlab_url)
+        if ref_issue is not None:
+            synced += update_task_with_issue_data(task, ref_issue)
 
     # adding everything that was not synced and is not duplicate
     for ref_id in non_moved:
         if ref_id not in synced:
-            add_issue_as_task_to_project(tasks, ref_id_to_issue[ref_id])
+            if (ref_issue := find_issue.by_ref_id(ref_id)) is not None:
+                add_issue_as_task_to_project(tasks, ref_issue)
