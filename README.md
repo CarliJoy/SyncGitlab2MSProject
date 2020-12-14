@@ -9,6 +9,8 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/syncgitlab2msproject/badge/?version=latest)](https://syncgitlab2msproject.readthedocs.io/en/latest/?badge=latest)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/CarliJoy/SyncGitlab2MSProject.svg)](http://isitmaintained.com/project/CarliJoy/SyncGitlab2MSProject)
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/CarliJoy/SyncGitlab2MSProject.svg)](http://isitmaintained.com/project/CarliJoy/SyncGitlab2MSProject)
 # SyncGitlab2MSProject
 
 Sync Gitlab Issues into a Microsoft Project File.
