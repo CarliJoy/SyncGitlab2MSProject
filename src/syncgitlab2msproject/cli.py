@@ -133,13 +133,13 @@ def label_convert(label_string: str) -> str:
 
 def has_not_label(issue: Issue, label: str) -> bool:
     """
-    Give true if to include an issue
+    Give true if to include the issue as it has no ignored label
+
     Args:
         issue: to compare with
         label: to ignore
 
     Returns: True if to include the label
-
     """
     if not label:
         return True
@@ -155,13 +155,14 @@ def filter_by_labels(issues: List[Issue], label: str) -> List[Issue]:
 
     Note: Currently not used as filtering is done directly in the match
           to allow better debug messages
+
     Args:
         issues: origin
         label: to filter out
 
     Returns: filtered list of issues
-
     """
+
     if not label:
         # Default for label is empty string, so in this case (or any other)
         # return the issues as they were
