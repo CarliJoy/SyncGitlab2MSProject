@@ -4,15 +4,20 @@ virt: lxd
 dist: focal
 group: edge
 language: python
+cache:
+  - directories:
+      - $HOME/.cache/pre-commit
+      - $TRAVIS_BUILD_DIR/.eggs
+  - pip
 python:
 - '3.8'
 virtualenv:
   system_site_packages: false
 install:
 - pip install --upgrade pip setuptools wheel
-- pip install --upgrade flake8 flake8-black mypy
+- pip install --upgrade pre-commit
 script:
-- flake8 src/ tests/
+- pre-commit run --all-files
 - mypy src/
 deploy:
   provider: pypi
