@@ -15,7 +15,7 @@ virtualenv:
   system_site_packages: false
 install:
 - pip install --upgrade pip setuptools wheel
-- pip install --upgrade pre-commit
+- pip install --upgrade pre-commit mypy
 script:
 - pre-commit run --all-files
 - mypy src/
