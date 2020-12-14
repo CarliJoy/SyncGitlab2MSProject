@@ -4,9 +4,10 @@ Changelog
 
 Version 0.0.6
 =============
-- Add ``--ignore-label`` option
+- Add ``--ignore-label`` option :issue:`3`
 - Add shortcuts ``-u`` and ``-t``  for gitlab url and gitlab token
-- Add `PreCommit`_ to prevent failing builds
+- Add `PreCommit`_ to prevent failing builds :issue:`4`
+- Fix Bug that percentage done was not calculated correctly :issue:`5`
 
 Version 0.0.5
 =============
