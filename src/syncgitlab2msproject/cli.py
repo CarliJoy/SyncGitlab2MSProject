@@ -169,7 +169,7 @@ def filter_by_labels(issues: List[Issue], label: str) -> List[Issue]:
         # return the issues as they were
         return issues
 
-    return list(filter(has_not_label, issues))
+    return list(filter(functools.partial(has_not_label, label=label), issues))
 
 
 def main(args):
