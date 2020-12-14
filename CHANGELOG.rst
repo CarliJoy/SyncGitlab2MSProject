@@ -4,7 +4,8 @@ Changelog
 
 Version 0.0.4
 =============
-- Add --ignore-label option
+- Add ``--ignore-label`` option
+- Add shortcuts ``-u`` and ``-t``  for gitlab url and gitlab token
 
 Version 0.0.3
 =============

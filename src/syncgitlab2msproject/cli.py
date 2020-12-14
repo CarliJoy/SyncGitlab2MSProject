@@ -75,6 +75,7 @@ def parse_args(args):
     # TODO read from ENV
     parser.add_argument(
         "--gitlab-url",
+        "-u",
         dest="gitlab_url",
         help="URL to the gitlab instance i.e. https://gitlab.your-company.com",
         default="https://gitlab.com",
@@ -84,6 +85,7 @@ def parse_args(args):
     # TODO read from ENV
     parser.add_argument(
         "--gitlab-token",
+        "-t",
         dest="gitlab_token",
         help="Gitlab personal access token",
         default=None,
