@@ -114,7 +114,7 @@ class Issue:
         if not self.has_tasks:
             return 0
         task = self.task_completion_status
-        return round(task["completed_count"] / task["count"])
+        return round(task["completed_count"] / task["count"] * 100)
 
     @property
     def moved_to_id(self) -> Optional[int]:
