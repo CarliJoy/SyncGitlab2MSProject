@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, overload
+from typing import List, Dict, Optional, overload, Callable
 from logging import getLogger
 
 import win32com.universal
@@ -77,7 +77,11 @@ def get_weburl_from_task(task: Optional[Task], gitlab_url: WebURL) -> Optional[W
 
 
 def update_task_with_issue_data(
-    task: Task, issue: Issue, parent_ids: Optional[List[IssueRef]] = None
+    task: Task,
+    issue: Issue,
+    *,
+    parent_ids: Optional[List[IssueRef]] = None,
+    ignore_issue: bool = False,
 ) -> List[IssueRef]:
     """
     Update task with issue data
@@ -88,6 +92,8 @@ def update_task_with_issue_data(
         task: The MS Project task that will be updated
         issue: the issue with the data to be considered
         parent_ids: the parent stuff
+        ignore_issue: only return the related (and moved) ids but do not really sync
+                      This is required so we can ignored also moved issues correctly
 
     Returns:
         list of IssueRefs that
@@ -100,13 +106,15 @@ def update_task_with_issue_data(
     if (moved_ref := issue.moved_reference) is not None:
         assert moved_ref is not None
         try:
-            return update_task_with_issue_data(task, moved_ref, parent_ids)
+            return update_task_with_issue_data(
+                task, moved_ref, parent_ids=parent_ids, ignore_issue=ignore_issue
+            )
         except MovedIssueNotDefined:
             logger.warning(
                 f"Issue {issue} was moved outside of context."
                 f" Ignoring the issue. Please update the task {task} manually!"
             )
-    else:
+    elif not ignore_issue:
         set_issue_ref_to_task(task, issue)
         try:
             task.name = issue.title
@@ -226,18 +234,22 @@ def find_related_issue(
 
 
 def sync_gitlab_issues_to_ms_project(
-    tasks: MSProject, issues: List[Issue], gitlab_url: WebURL
-):
+    tasks: MSProject,
+    issues: List[Issue],
+    gitlab_url: WebURL,
+    include_issue: Optional[Callable[[Issue], bool]] = None,
+) -> None:
     """
 
     Args:
         tasks: MS Project Tasks that will be synchronized
         issues:  List of Gitlab Issues
         gitlab_url: the gitlab istance url to check url found in MS project against
-
-    Returns:
-
+        include_issue: Include issue in sync, if None include everything
     """
+    if include_issue is None:
+        include_issue = lambda x: True
+
     ref_issue: Optional[Issue]
     # Keep track of already synced issues
     synced: List[IssueRef] = []
@@ -259,15 +271,37 @@ def sync_gitlab_issues_to_ms_project(
         if task is None:
             continue
         ref_issue = find_related_issue(task, find_issue, gitlab_url)
-        if ref_issue is not None:
-            logger.info(f"Syncing {ref_issue} into {task}")
-            synced += update_task_with_issue_data(task, ref_issue)
-        else:
+
+        if ref_issue is None:
             logger.info(
-                f"Not Syncing {task} as a not reference to an gitlab issue could be found"
+                f"Not Syncing {task} as a not reference "
+                f"to an gitlab issue could be found"
             )
+        else:
+            ignore_issue = False
+            if not include_issue(ref_issue):
+                logger.info(
+                    f"Ignoring task {task} as issue {ref_issue} "
+                    f"has been marked to be ignored"
+                )
+                ignore_issue = True
+            else:
+                logger.info(f"Syncing {ref_issue} into {task}")
+            # We want to not have the ignored task popping up in issues that need to be
+            # added and we also want make sure that moved ignored issues are handled
+            # correctly
+            synced += update_task_with_issue_data(
+                task, ref_issue, ignore_issue=ignore_issue
+            )
+
     # adding everything that was not synced and is not duplicate
     for ref_id in non_moved:
         if ref_id not in synced:
             if (ref_issue := find_issue.by_ref_id(ref_id)) is not None:
-                add_issue_as_task_to_project(tasks, ref_issue)
+                if not include_issue(ref_issue):
+                    logger.info(
+                        f"Do not add issue {ref_issue} "
+                        f"as it has been marked to be ignored."
+                    )
+                else:
+                    add_issue_as_task_to_project(tasks, ref_issue)

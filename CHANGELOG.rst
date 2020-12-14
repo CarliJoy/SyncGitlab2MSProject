@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 0.0.4
+=============
+- Add --ignore-label option
+
 Version 0.0.3
 =============
 - Also use Hyperlink or Text29 URL field to find related issues

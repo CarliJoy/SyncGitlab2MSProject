@@ -6,14 +6,17 @@ Handle the Command Line Interface
 import argparse
 import sys
 import logging
+import functools
 from pathlib import Path
+from typing import List
+
 
 from requests import ConnectionError
-from syncgitlab2msproject import __version__, MSProject
+from syncgitlab2msproject import __version__, MSProject, Issue
 
 __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
-__license__ = "mit"
+__license__ = "MIT"
 
 from syncgitlab2msproject.custom_types import WebURL
 
@@ -58,6 +61,15 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action="store_const",
         const=logging.DEBUG,
+    )
+
+    parser.add_argument(
+        "--ignore-label",
+        "-i",
+        dest="ignore_label",
+        help="Ignore Gitlab Issue with a match to the label",
+        default="",
+        type=str,
     )
 
     # TODO read from ENV
@@ -112,6 +124,52 @@ def setup_logging(loglevel):
     )
 
 
+def label_convert(label_string: str) -> str:
+    """
+    Convert the label string for easier matches
+    """
+    return label_string.lower().replace(" ", "")
+
+
+def has_not_label(issue: Issue, label: str) -> bool:
+    """
+    Give true if to include an issue
+    Args:
+        issue: to compare with
+        label: to ignore
+
+    Returns: True if to include the label
+
+    """
+    if not label:
+        return True
+    for _label in issue.labels:
+        if label_convert(_label) == label_convert(label):
+            return False
+    return True
+
+
+def filter_by_labels(issues: List[Issue], label: str) -> List[Issue]:
+    """
+    Filter out issues whoes label matches given one
+
+    Note: Currently not used as filtering is done directly in the match
+          to allow better debug messages
+    Args:
+        issues: origin
+        label: to filter out
+
+    Returns: filtered list of issues
+
+    """
+    if not label:
+        # Default for label is empty string, so in this case (or any other)
+        # return the issues as they were
+        return issues
+
+    return list(filter(has_not_label, issues))
+
+
 def main(args):
     """Main entry point allowing external calls
 
@@ -143,8 +201,11 @@ def main(args):
         _logger.error(f"Error contacting gitlab instance: {e}")
         exit(64)
     else:
+        include_issue = functools.partial(has_not_label, label=args.ignore_label)
         with MSProject(ms_project_file.absolute()) as tasks:
-            sync_gitlab_issues_to_ms_project(tasks, issues, WebURL(args.gitlab_url))
+            sync_gitlab_issues_to_ms_project(
+                tasks, issues, WebURL(args.gitlab_url), include_issue
+            )
     _logger.info("Finished syncing")
 
 
