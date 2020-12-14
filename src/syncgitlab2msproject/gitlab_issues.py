@@ -1,9 +1,8 @@
-from typing import Optional, List
-from datetime import datetime
-from logging import getLogger
-
 import dateutil.parser
+from datetime import datetime
 from gitlab import Gitlab
+from logging import getLogger
+from typing import List, Optional
 
 from .custom_types import GitlabIssue, GitlabUserDict
 from .exceptions import MovedIssueNotDefined

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Union, Optional, Callable
-from pathlib import Path
-from inspect import getattr_static, signature
-from datetime import datetime
 import pytest
 
-from syncgitlab2msproject.ms_project import MSProject
+from datetime import datetime
+from inspect import getattr_static, signature
+from pathlib import Path
+from typing import Any, Callable, Optional, Union
+
 from syncgitlab2msproject.exceptions import (
-    LoadingError,
     ClassNotInitiated,
+    LoadingError,
     MSProjectSyncError,
 )
+from syncgitlab2msproject.ms_project import MSProject
 
 __author__ = "Carli"
 __copyright__ = "Carli"

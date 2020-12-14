@@ -1,6 +1,5 @@
-from typing import Union, Dict, NewType, Any
-
-from gitlab.v4.objects import ProjectIssue, GroupIssue
+from gitlab.v4.objects import GroupIssue, ProjectIssue
+from typing import Any, Dict, NewType, Union
 
 GitlabUserDict = Dict[str, Union[str, int]]
 GitlabIssue = Union[GroupIssue, ProjectIssue]

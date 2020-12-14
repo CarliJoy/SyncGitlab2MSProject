@@ -1,17 +1,17 @@
-from typing import List, Dict, Optional, overload, Callable
-from logging import getLogger
-
 import win32com.universal
+from logging import getLogger
+from typing import Callable, Dict, List, Optional, overload
+
 from syncgitlab2msproject.custom_types import WebURL
 
+from .custom_types import IssueRef
 from .exceptions import (
+    IssueReferenceDuplicated,
     MovedIssueNotDefined,
     MSProjectValueSetError,
-    IssueReferenceDuplicated,
 )
 from .gitlab_issues import Issue
-from .ms_project import Task, MSProject
-from .custom_types import IssueRef
+from .ms_project import MSProject, Task
 
 logger = getLogger(f"{__package__}.{__name__}")
 
@@ -248,8 +248,10 @@ def sync_gitlab_issues_to_ms_project(
         include_issue: Include issue in sync, if None include everything
     """
     if include_issue is None:
+
         def always_true(x: Issue):
             return True
+
         include_issue = always_true
 
     ref_issue: Optional[Issue]

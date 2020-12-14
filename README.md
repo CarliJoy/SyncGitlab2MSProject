@@ -27,22 +27,22 @@ The following MS Project attributes are synced (overwritten) from gitlab:
   - Text28 (the list of labels)
   - Text29 (the URL to gitlab issue)
   - Text30 (the reference to the issue is stored there)
-  - Hyperlink (link/URL to gitlab issue) 
+  - Hyperlink (link/URL to gitlab issue)
 
 Not yet implemented but planned:
   - Resources (from Assigned)
 
-Moved issues will be handled if the group selected and the issue was moved within the 
+Moved issues will be handled if the group selected and the issue was moved within the
 group. Problem is that accessing issues only by ID is just allowed for admins.
 
 ## Requirements
 This project runs only in an Windows Environment with Microsoft Project installed.
 
 **Please note:** This Script has been tested only mit Microsoft Project 2016.
-It cloud be, that some of the API has changed in newer versions. 
-If you run into any troubles with a new version, please open an 
-[Issue](https://github.com/CarliJoy/SyncGitlab2MSProject/issues/new). 
- 
+It cloud be, that some of the API has changed in newer versions.
+If you run into any troubles with a new version, please open an
+[Issue](https://github.com/CarliJoy/SyncGitlab2MSProject/issues/new).
+
 ## Usage
 ```
 usage: sync_gitlab2msproject [-h] [--version] [-v] [-vv] [--gitlab-url GITLAB_URL] [--gitlab-token GITLAB_TOKEN] {project,group} gitlab_resource_id project_file
@@ -73,9 +73,9 @@ optional arguments:
 `sync_gitlab2msproject --gitlab-url https://gitlab.company.com --gitlab-token <your_token> group <your_group_id> ms_project_file.mpp`
 
 ## Open Hyplerlink Problems
-If you have troubles that the wrong issues are opened once you click on a Hyperlink use 
+If you have troubles that the wrong issues are opened once you click on a Hyperlink use
 the following VBA Script as a workaround.
-Simply add the VBA script to your Ribbon and it will open all Hyperlinks of the 
+Simply add the VBA script to your Ribbon and it will open all Hyperlinks of the
 selected tasks.
 
 ```vbscript
@@ -92,7 +92,7 @@ Private Declare Function ShellExecute _
   ) As Long
 
 Public Sub OpenUrls()
-   
+
     Dim lSuccess As Long
     Dim T As Task
     Dim Names As String

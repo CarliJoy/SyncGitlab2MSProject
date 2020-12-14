@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import DistributionNotFound, get_distribution
 
 try:
     # Change here if project is renamed and does not equal the package name
@@ -10,8 +10,8 @@ except DistributionNotFound:
 finally:
     del get_distribution, DistributionNotFound
 
-from .ms_project import MSProject
 from .gitlab_issues import Issue
+from .ms_project import MSProject
 from .sync import sync_gitlab_issues_to_ms_project
 
 __all__ = ["MSProject", "Issue", "sync_gitlab_issues_to_ms_project"]

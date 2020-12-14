@@ -1,5 +1,5 @@
 # https://docs.microsoft.com/de-de/office/vba/api/project.pjsavetype
-from typing import Iterable, Any, Union, Sequence
+from typing import Any, Iterable, Sequence, Union
 
 pjPromptSave = 2
 pjSave = 1

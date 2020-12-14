@@ -1,21 +1,20 @@
-from os import PathLike
-from logging import getLogger
-from typing import Sequence, Optional, Union, List, Any
-from datetime import datetime
 import dateutil
 import pywintypes
-
 import win32com.client
+from datetime import datetime
+from logging import getLogger
+from os import PathLike
+from typing import Any, List, Optional, Sequence, Union
+from win32com.universal import com_error
+
+from .custom_types import ComMSProjectApplication, ComMSProjectProject
+from .decorators import make_none_safe
+from .exceptions import ClassNotInitiated, LoadingError, MSProjectValueSetError
+from .funcions import convert_to_int_or_raise_exception, raise_exception_if_not_datetime
 
 # Classes and functions to access Microsoft Project
 # Inspired by https://gist.github.com/zlorb/ff122e8563793bb28f79
 
-from win32com.universal import com_error
-
-from .funcions import raise_exception_if_not_datetime, convert_to_int_or_raise_exception
-from .exceptions import ClassNotInitiated, LoadingError, MSProjectValueSetError
-from .decorators import make_none_safe
-from .custom_types import ComMSProjectProject, ComMSProjectApplication
 
 logger = getLogger(f"{__package__}.{__name__}")
 

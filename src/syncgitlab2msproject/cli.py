@@ -4,26 +4,24 @@ Handle the Command Line Interface
 """
 
 import argparse
-import sys
-import logging
 import functools
+import logging
+import sys
 from pathlib import Path
+from requests import ConnectionError
 from typing import List
 
-
-from requests import ConnectionError
-from syncgitlab2msproject import __version__, MSProject, Issue
+from syncgitlab2msproject import Issue, MSProject, __version__
 
 __author__ = "Carli Freudenberg"
 __copyright__ = "Carli Freudenberg"
 __license__ = "MIT"
 
 from syncgitlab2msproject.custom_types import WebURL
-
 from syncgitlab2msproject.gitlab_issues import (
-    get_project_issues,
     get_gitlab_class,
     get_group_issues,
+    get_project_issues,
 )
 from syncgitlab2msproject.sync import sync_gitlab_issues_to_ms_project
 
