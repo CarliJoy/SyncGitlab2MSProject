@@ -2,20 +2,44 @@
 import pytest
 
 from datetime import datetime
+from functools import partial
 from inspect import getattr_static, signature
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Generic, Type, Union
 
 from syncgitlab2msproject.exceptions import (
     ClassNotInitiated,
     LoadingError,
     MSProjectSyncError,
 )
-from syncgitlab2msproject.ms_project import MSProject
+from syncgitlab2msproject.ms_project import MSProject, PjTaskFixedType
 
 __author__ = "Carli"
 __copyright__ = "Carli"
-__license__ = "mit"
+__license__ = "MIT"
+
+# Source: https://stackoverflow.com/a/58841311/3813064
+# Python >= 3.8
+try:
+    from typing import get_args, get_origin
+# Compatibility
+except ImportError:
+
+    def get_args(t: Type):
+        return getattr(t, "__args__", ()) if t is not Generic else Generic
+
+    def get_origin(t: Type):
+        return getattr(t, "__origin__", None)
+
+
+def is_optional(field: Type):
+    return get_origin(field) is Union and type(None) in get_args(field)
+
+
+def is_datetime(field: Type):
+    return (field == datetime) or (
+        get_origin(field) is Union and datetime in get_args(field)
+    )
 
 
 BASE_DIR = Path(__file__).absolute().parent
@@ -95,29 +119,60 @@ def test_printing_all():
 
 
 def test_setting_everything():
-    def check_setting_val(obj: Any, attrib: str, prop_type: Union[type, None]):
-        if prop_type == datetime:
-            new_value = datetime(2020, 3, 4, 20, 15, 30).astimezone()
-        elif prop_type == int:
-            new_value = 1
-        elif prop_type == str:
-            new_value = "Test String"
-        elif prop_type == bool:
-            new_value = True
-        elif prop_type is None:
-            new_value = None
-        else:
-            raise ValueError(f"Invalid type {prop_type}")
-
+    def do_check_setting_val(
+        new_value: Any, obj_to_test: Any, attrib: str, prop_type: Union[type, None]
+    ):
         # If new val is given lets try to set it and compare it with result
-        setattr(obj, attrib, new_value)
+        setattr(obj_to_test, attrib, new_value)
         print(f"Checking {attrib} - {prop_type} with '{new_value}'")
         if isinstance(new_value, datetime):
             # We need
-            compare: datetime = getattr(obj, attrib)
+            compare: datetime = getattr(obj_to_test, attrib)
             assert str(compare.astimezone()) == str(new_value)
         else:
-            assert getattr(obj, attrib) == new_value
+            assert getattr(obj_to_test, attrib) == new_value
+
+    def check_setting_val(obj: Any, attrib: str, prop_type: Union[type, None]):
+        check_set_val = partial(
+            do_check_setting_val, obj_to_test=obj, attrib=attrib, prop_type=prop_type
+        )
+
+        if is_datetime(prop_type):
+            do_check_setting_val(
+                datetime(2020, 3, 4, 20, 15, 30).astimezone(),
+                obj_to_test=obj,
+                attrib=attrib,
+                prop_type=datetime,
+            )
+            if is_optional(prop_type):
+                do_check_setting_val(
+                    None, obj_to_test=obj, attrib=attrib, prop_type=None
+                )
+        elif prop_type == int:
+            check_set_val(1)
+        elif prop_type == str:
+            check_set_val("Test String")
+        elif prop_type == bool:
+            check_set_val(True)
+            check_set_val(False)
+        elif prop_type is None:
+            check_set_val(None)
+        elif PjTaskFixedType in get_args(prop_type):
+            for itm in PjTaskFixedType:
+                do_check_setting_val(
+                    itm,
+                    obj_to_test=obj,
+                    attrib=attrib,
+                    prop_type=PjTaskFixedType,
+                )
+                do_check_setting_val(
+                    itm,
+                    obj_to_test=obj,
+                    attrib=attrib,
+                    prop_type=int,
+                )
+        else:
+            raise ValueError(f"Invalid type {prop_type}")
 
     with pytest.raises(DoNotSave):
         with MSProject(TEST_FILE) as tasks:
@@ -127,13 +182,7 @@ def test_setting_everything():
                 if not attribute.startswith("_"):
                     if setter_func := get_prop_setter_func(task, attribute):
                         prop_type = get_prop_set_type_annotation(setter_func)
-                        if prop_type in (int, bool, None, datetime, str):
-                            check_setting_val(task, attribute, prop_type)
-                        elif prop_type == Optional[datetime]:
-                            check_setting_val(task, attribute, None)
-                            check_setting_val(task, attribute, datetime)
-                        else:
-                            print(f"{attribute} ignored {prop_type}")
+                        check_setting_val(task, attribute, prop_type)
             raise DoNotSave("We do not want the file to save!")
 
 

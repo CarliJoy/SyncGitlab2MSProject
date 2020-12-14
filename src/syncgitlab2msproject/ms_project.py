@@ -2,6 +2,7 @@ import dateutil
 import pywintypes
 import win32com.client
 from datetime import datetime
+from enum import IntEnum
 from logging import getLogger
 from os import PathLike
 from typing import Any, List, Optional, Sequence, Union
@@ -17,6 +18,17 @@ from .funcions import convert_to_int_or_raise_exception, raise_exception_if_not_
 
 
 logger = getLogger(f"{__package__}.{__name__}")
+
+
+class PjTaskFixedType(IntEnum):
+    """
+    MS Project Task Type as defined in
+    https://docs.microsoft.com/en-us/office/vba/api/project.pjtaskfixedtype
+    """
+
+    pjFixedDuration = 1  # Fixed Duration
+    pjFixedUnits = 0  # Fixed Unit
+    pjFixedWork = 2  # Fixed Work
 
 
 @make_none_safe
@@ -336,7 +348,7 @@ class Task:
     @outline_level.setter
     def outline_level(self, value: int):
         value = convert_to_int_or_raise_exception(value)
-        if value > 1:
+        if value >= 1:
             self._set_task_val("OutlineLevel", value)
         else:
             raise MSProjectValueSetError(
@@ -612,3 +624,25 @@ class Task:
     @text30.setter
     def text30(self, value: str):
         self._set_task_val("Text30", value)
+
+    @property
+    def type(self) -> PjTaskFixedType:
+        return PjTaskFixedType(self._get_task().Type)
+
+    @type.setter
+    def type(self, value: Union[PjTaskFixedType, int]):
+        if isinstance(value, int):
+            value = PjTaskFixedType(value)
+        if value.value not in [item.value for item in PjTaskFixedType]:
+            raise ValueError(f"Can't set '{value}' it is not a valid task type.")
+        self._get_task().Type = value.value
+
+    @property
+    def effort_driven(self) -> bool:
+        return self._get_task().EffortDriven
+
+    @effort_driven.setter
+    def effort_driven(self, value: bool):
+        if not value and self.type == PjTaskFixedType.pjFixedWork:
+            raise ValueError("Can't unset EffortDrive for FixedWork")
+        self._get_task().EffortDriven = bool(value)
