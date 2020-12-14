@@ -248,7 +248,9 @@ def sync_gitlab_issues_to_ms_project(
         include_issue: Include issue in sync, if None include everything
     """
     if include_issue is None:
-        include_issue = lambda x: True
+        def always_true(x: Issue):
+            return True
+        include_issue = always_true
 
     ref_issue: Optional[Issue]
     # Keep track of already synced issues
