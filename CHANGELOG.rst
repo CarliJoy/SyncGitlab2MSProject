@@ -2,10 +2,20 @@
 Changelog
 =========
 
-Version 0.0.4
+Version 0.0.6
 =============
 - Add ``--ignore-label`` option
 - Add shortcuts ``-u`` and ``-t``  for gitlab url and gitlab token
+
+Version 0.0.5
+=============
+- was only required to get travis to work, now it does!
+
+Version 0.0.4
+=============
+- First auto release with travis
+    - Use `Travis AWS`_
+    - Use travis.com instead of travis.org
 
 Version 0.0.3
 =============
@@ -25,3 +35,5 @@ Version 0.0.1
 =============
 
 - First Release
+
+.. _Travis AWS: https://blog.travis-ci.com/2020-09-11-arm-on-aws
