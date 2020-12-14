@@ -6,6 +6,7 @@
 [![Project Status](https://img.shields.io/pypi/status/SyncGitlab2MSProject.svg)](https://pypi.org/project/SyncGitlab2MSProject/)
 [![Code Style Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/syncgitlab2msproject/badge/?version=latest)](https://syncgitlab2msproject.readthedocs.io/en/latest/?badge=latest)
 # SyncGitlab2MSProject

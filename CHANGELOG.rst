@@ -6,6 +6,7 @@ Version 0.0.6
 =============
 - Add ``--ignore-label`` option
 - Add shortcuts ``-u`` and ``-t``  for gitlab url and gitlab token
+- Add `PreCommit`_ to prevent failing builds
 
 Version 0.0.5
 =============
@@ -37,3 +38,4 @@ Version 0.0.1
 - First Release
 
 .. _Travis AWS: https://blog.travis-ci.com/2020-09-11-arm-on-aws
+.. _PreCommit: https://pre-commit.com/
