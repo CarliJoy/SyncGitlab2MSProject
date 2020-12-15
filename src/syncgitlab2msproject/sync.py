@@ -1,8 +1,9 @@
 import win32com.universal
 from logging import getLogger
-from typing import Callable, Dict, List, Optional, overload
+from typing import Callable, Dict, List, Optional, Type, overload
 
 from syncgitlab2msproject.custom_types import WebURL
+from syncgitlab2msproject.helper_classes import TaskTyperSetter
 
 from .custom_types import IssueRef
 from .exceptions import (
@@ -79,9 +80,11 @@ def get_weburl_from_task(task: Optional[Task], gitlab_url: WebURL) -> Optional[W
 def update_task_with_issue_data(
     task: Task,
     issue: Issue,
+    task_type_setter: Type[TaskTyperSetter],
     *,
     parent_ids: Optional[List[IssueRef]] = None,
     ignore_issue: bool = False,
+    is_add: bool = False,
 ) -> List[IssueRef]:
     """
     Update task with issue data
@@ -91,9 +94,11 @@ def update_task_with_issue_data(
     Args:
         task: The MS Project task that will be updated
         issue: the issue with the data to be considered
+        task_type_setter: Helper class to set the task type correct
         parent_ids: the parent stuff
         ignore_issue: only return the related (and moved) ids but do not really sync
                       This is required so we can ignored also moved issues correctly
+        is_add:
 
     Returns:
         list of IssueRefs that
@@ -107,7 +112,11 @@ def update_task_with_issue_data(
         assert moved_ref is not None
         try:
             return update_task_with_issue_data(
-                task, moved_ref, parent_ids=parent_ids, ignore_issue=ignore_issue
+                task,
+                moved_ref,
+                task_type_setter,
+                parent_ids=parent_ids,
+                ignore_issue=ignore_issue,
             )
         except MovedIssueNotDefined:
             logger.warning(
@@ -117,6 +126,8 @@ def update_task_with_issue_data(
     elif not ignore_issue:
         set_issue_ref_to_task(task, issue)
         try:
+            type_setter = task_type_setter(issue)
+            type_setter.set_task_type_before_sync(task, is_add)
             task.name = issue.title
             task.notes = issue.description
             if issue.due_date is not None:
@@ -135,6 +146,7 @@ def update_task_with_issue_data(
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
+            type_setter.set_task_type_after_sync(task)
         except (MSProjectValueSetError, win32com.universal.com_error) as e:
             logger.error(
                 f"FATAL: Could not sync issue {issue} to task {task}.\nError: {e}"
@@ -144,12 +156,14 @@ def update_task_with_issue_data(
     return parent_ids
 
 
-def add_issue_as_task_to_project(tasks: MSProject, issue: Issue):
+def add_issue_as_task_to_project(
+    tasks: MSProject, issue: Issue, task_type_setter: Type[TaskTyperSetter]
+):
     task = tasks.add_task(issue.title)
     logger.info(f"Created {task} as it was missing for issue, now syncing it.")
     # Add a setting to allow forcing outline level on new tasks
     # task.outline_level = 1
-    update_task_with_issue_data(task, issue)
+    update_task_with_issue_data(task, issue, task_type_setter, is_add=True)
 
 
 class IssueFinder:
@@ -237,6 +251,7 @@ def sync_gitlab_issues_to_ms_project(
     tasks: MSProject,
     issues: List[Issue],
     gitlab_url: WebURL,
+    task_type_setter: Type[TaskTyperSetter],
     include_issue: Optional[Callable[[Issue], bool]] = None,
 ) -> None:
     """
@@ -295,7 +310,7 @@ def sync_gitlab_issues_to_ms_project(
             # added and we also want make sure that moved ignored issues are handled
             # correctly
             synced += update_task_with_issue_data(
-                task, ref_issue, ignore_issue=ignore_issue
+                task, ref_issue, task_type_setter, ignore_issue=ignore_issue
             )
 
     # adding everything that was not synced and is not duplicate
@@ -308,4 +323,4 @@ def sync_gitlab_issues_to_ms_project(
                         f"as it has been marked to be ignored."
                     )
                 else:
-                    add_issue_as_task_to_project(tasks, ref_issue)
+                    add_issue_as_task_to_project(tasks, ref_issue, task_type_setter)

@@ -8,6 +8,8 @@ Version 0.0.6
 - Add shortcuts ``-u`` and ``-t``  for gitlab url and gitlab token
 - Add `PreCommit`_ to prevent failing builds :issue:`4`
 - Fix Bug that percentage done was not calculated correctly :issue:`5`
+- Syncing always set Task Type to Fixed Work but revert to original after sync :issue:`6`
+- Adding parameter ``--force-fixed-work``  that does not reset the Task Type after sync
 
 Version 0.0.5
 =============

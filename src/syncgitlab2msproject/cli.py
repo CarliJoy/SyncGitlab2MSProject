@@ -23,6 +23,7 @@ from syncgitlab2msproject.gitlab_issues import (
     get_group_issues,
     get_project_issues,
 )
+from syncgitlab2msproject.helper_classes import ForceFixedWork, SetTaskTypeConservative
 from syncgitlab2msproject.sync import sync_gitlab_issues_to_ms_project
 
 _logger = logging.getLogger(f"{__package__}.{__name__}")
@@ -68,6 +69,14 @@ def parse_args(args):
         help="Ignore Gitlab Issue with a match to the label",
         default="",
         type=str,
+    )
+
+    parser.add_argument(
+        "--force-fixed-work",
+        dest="fixed_work",
+        help="Set all synced issued to fixed_work, overwriting "
+        "also already existing tasks",
+        action="store_true",
     )
 
     # TODO read from ENV
@@ -196,6 +205,11 @@ def main(args):
     else:
         raise ValueError("Invalid Resource Type")
 
+    if args.fixed_work:
+        sync_task_helper = ForceFixedWork
+    else:
+        sync_task_helper = SetTaskTypeConservative
+
     try:
         issues = get_issues_func(gitlab, args.gitlab_resource_id)
     except ConnectionError as e:
@@ -205,7 +219,7 @@ def main(args):
         include_issue = functools.partial(has_not_label, label=args.ignore_label)
         with MSProject(ms_project_file.absolute()) as tasks:
             sync_gitlab_issues_to_ms_project(
-                tasks, issues, WebURL(args.gitlab_url), include_issue
+                tasks, issues, WebURL(args.gitlab_url), sync_task_helper, include_issue
             )
     _logger.info("Finished syncing")
 
