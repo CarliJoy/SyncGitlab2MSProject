@@ -197,6 +197,10 @@ class Task:
         return self._get_task().ID
 
     @property
+    def has_children(self) -> bool:
+        return len(self._get_task().OutlineChildren) > 0
+
+    @property
     def name(self) -> str:
         return self._get_task().Name
 
