@@ -132,7 +132,8 @@ def update_task_with_issue_data(
             task.notes = issue.description
             if issue.due_date is not None:
                 task.deadline = issue.due_date
-            task.work = int(issue.time_estimated)
+            if not task.has_children:
+                task.work = int(issue.time_estimated)
             # Update duration in case it seems to be default
             if task.duration == DEFAULT_DURATION and task.estimated:
                 if task.work > 0:

@@ -10,6 +10,7 @@ Version 0.0.6
 - Fix Bug that percentage done was not calculated correctly :issue:`5`
 - Syncing always set Task Type to Fixed Work but revert to original after sync :issue:`6`
 - Adding parameter ``--force-fixed-work``  that does not reset the Task Type after sync
+- Do not sync work with summary task :issue:`1`
 
 Version 0.0.5
 =============
