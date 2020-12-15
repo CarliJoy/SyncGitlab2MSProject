@@ -635,7 +635,7 @@ class Task:
             value = PjTaskFixedType(value)
         if value.value not in [item.value for item in PjTaskFixedType]:
             raise ValueError(f"Can't set '{value}' it is not a valid task type.")
-        self._get_task().Type = value.value
+        self._set_task_val("Type", value.value)
 
     @property
     def effort_driven(self) -> bool:
@@ -643,6 +643,10 @@ class Task:
 
     @effort_driven.setter
     def effort_driven(self, value: bool):
-        if not value and self.type == PjTaskFixedType.pjFixedWork:
-            raise ValueError("Can't unset EffortDrive for FixedWork")
-        self._get_task().EffortDriven = bool(value)
+        if self.type == PjTaskFixedType.pjFixedWork:
+            if not value:
+                raise ValueError("Can't unset EffortDrive for FixedWork")
+            # In case we have Fixed Work it is already effort driven, so lets
+            # ignore it
+        else:
+            self._set_task_val("EffortDriven", bool(value))
