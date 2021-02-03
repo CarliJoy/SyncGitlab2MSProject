@@ -2,7 +2,9 @@ import dateutil.parser
 from datetime import datetime
 from gitlab import Gitlab
 from logging import getLogger
-from typing import List, Optional
+from typing import List, Optional, Dict, Union
+
+from gitlab.v4.objects import Project
 
 from .custom_types import GitlabIssue, GitlabUserDict
 from .exceptions import MovedIssueNotDefined
@@ -25,9 +27,19 @@ class Issue:
     """
 
     # The issue object itself is not dynamic only the contained obj is!
-    __slots__ = ["obj", "_moved_reference"]
+    __slots__ = [
+        "obj",
+        "_moved_reference",
+        "_fixed_group_id",
+    ]
 
-    def __init__(self, obj: GitlabIssue):
+    def __init__(self, obj: GitlabIssue, fixed_group_id: Optional[int] = None):
+        """
+        :param obj:
+        :param fixed_group_id: Do not extract the group_id from the
+                               Gitlab issue but assume it is fixed
+        """
+        self._fixed_group_id = fixed_group_id
         self.obj: GitlabIssue = obj
         self._moved_reference: Optional[Issue] = None
 
@@ -82,6 +94,13 @@ class Issue:
 
     @property
     def group_id(self) -> int:
+        """
+        Return the group id, if negative a user id is given
+        The group ID is either taken from the issue itself or if a project is given
+        the issue is fixed (see #1)
+        """
+        if self._fixed_group_id is not None:
+            return self._fixed_group_id
         return self.obj.group_id
 
     @property
@@ -183,6 +202,21 @@ class Issue:
         return self.obj.web_url
 
 
+def get_group_id_from_gitlab_project(project: Project) -> int:
+    """
+    Get user id form gitlab project.
+    If the namespace of the project is a user, a negativ
+    value is returned
+    :param project:
+    :return:
+    """
+    namespace: Dict[str, Union[int, str]] = project.namespace
+    if str(namespace["kind"]).lower() == "user":
+        return -int(namespace["id"])
+    else:
+        return int(namespace["id"])
+
+
 def get_gitlab_class(server: str, personal_token: Optional[str] = None) -> Gitlab:
     if personal_token is None:
         return Gitlab(server)
@@ -197,4 +231,7 @@ def get_group_issues(gitlab: Gitlab, group_id: int) -> List[Issue]:
 
 def get_project_issues(gitlab: Gitlab, project_id: int) -> List[Issue]:
     project = gitlab.projects.get(project_id, lazy=True)
-    return [Issue(issue) for issue in project.issues.list(all=True)]
+    return [
+        Issue(issue, fixed_group_id=get_group_id_from_gitlab_project(project))
+        for issue in project.issues.list(all=True)
+    ]
