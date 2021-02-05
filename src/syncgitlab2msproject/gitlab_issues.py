@@ -1,5 +1,6 @@
 import dateutil.parser
 from datetime import datetime
+from functools import lru_cache
 from gitlab import Gitlab
 from gitlab.v4.objects import Project
 from logging import getLogger
@@ -7,6 +8,7 @@ from typing import Dict, List, Optional, Union
 
 from .custom_types import GitlabIssue, GitlabUserDict
 from .exceptions import MovedIssueNotDefined
+from .funcions import warn_once
 
 logger = getLogger(f"{__package__}.{__name__}")
 
@@ -92,15 +94,31 @@ class Issue:
         return self.obj.project_id
 
     @property
-    def group_id(self) -> int:
+    def group_id(self) -> Optional[int]:
         """
         Return the group id, if negative a user id is given
         The group ID is either taken from the issue itself or if a project is given
-        the issue is fixed (see #1)
+        the issue is fixed (see #7)
+
+        If group_id isn't fixed and can't be extracted, only give a warning and do
+        not fail, as it isn't required to have the sync working. Only the
+        issue id or weblink is used to find the related issue.
+        See `sync.py`
+          * `get_issue_ref_from_task`
+          * `IssueFinder`
+
         """
         if self._fixed_group_id is not None:
             return self._fixed_group_id
-        return self.obj.group_id
+        try:
+            return self.obj.group_id
+        except AttributeError:
+            warn_once(
+                logger,
+                "Could not extract group_id from Issue. "
+                "This is not required for sync to, so I will continue.",
+            )
+            return None
 
     @property
     def has_tasks(self) -> bool:
@@ -201,15 +219,22 @@ class Issue:
         return self.obj.web_url
 
 
-def get_group_id_from_gitlab_project(project: Project) -> int:
+@lru_cache(10)
+def get_group_id_from_gitlab_project(project: Project) -> Optional[int]:
     """
     Get user id form gitlab project.
     If the namespace of the project is a user, a negativ
     value is returned
     :param project:
-    :return:
     """
-    namespace: Dict[str, Union[int, str]] = project.namespace
+    try:
+        namespace: Dict[str, Union[int, str]] = project.namespace
+    except AttributeError:
+        logger.warning(
+            f"Could not extract name space for project '{project.get_id()}' - "
+            "This error will be ignored."
+        )
+        return None
     if str(namespace["kind"]).lower() == "user":
         return -int(namespace["id"])
     else:
@@ -229,7 +254,7 @@ def get_group_issues(gitlab: Gitlab, group_id: int) -> List[Issue]:
 
 
 def get_project_issues(gitlab: Gitlab, project_id: int) -> List[Issue]:
-    project = gitlab.projects.get(project_id, lazy=True)
+    project = gitlab.projects.get(project_id)
     return [
         Issue(issue, fixed_group_id=get_group_id_from_gitlab_project(project))
         for issue in project.issues.list(all=True)

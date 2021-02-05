@@ -1,4 +1,6 @@
 from datetime import datetime
+from functools import lru_cache
+from logging import Logger
 from typing import Any
 
 from .exceptions import MSProjectValueSetError
@@ -29,3 +31,8 @@ def convert_to_int_or_raise_exception(value: Any) -> int:
             f"Expected a value that can be converted to int, but "
             f"but value '{value}' of type {type(value)} can't be converted: {e}"
         )
+
+
+@lru_cache(20)
+def warn_once(logger: Logger, msg: str):
+    logger.warning(msg)
