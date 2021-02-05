@@ -116,7 +116,7 @@ class Issue:
             warn_once(
                 logger,
                 "Could not extract group_id from Issue. "
-                "This is not required for sync to, so I will continue.",
+                "This is not required for syncing, so I will continue.",
             )
             return None
 
