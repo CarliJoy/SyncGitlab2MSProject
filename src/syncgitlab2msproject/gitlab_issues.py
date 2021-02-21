@@ -181,19 +181,42 @@ class Issue:
             return get_user_identifier(val)
         return None
 
+    def _get_from_time_stats(self, key) -> Optional[float]:
+        """
+        Somehow the python-gitlab API seems to be not 100% fixed,
+        see issue #9
+
+        :param key: key to query from time state
+        :return: the value if existing or none
+        """
+        query_dict: Dict[str, float]
+        if callable(self.obj.time_stats):
+            query_dict = self.obj.time_stats()
+        else:
+            query_dict = self.obj.time_stats
+        return query_dict.get(key, None)
+
     @property
-    def time_estimated(self) -> float:
+    def time_estimated(self) -> Optional[float]:
         """
         Time estimated in minutes
         """
-        return self.obj.time_stats["time_estimate"] / 60
+        if (time_estimate := self._get_from_time_stats("time_estimate")) is not None:
+            return time_estimate / 60
+        else:
+            logger.warning("Time Estimate is None")
+            return None
 
     @property
-    def time_spent_total(self) -> float:
+    def time_spent_total(self) -> Optional[float]:
         """
         Total time spent in minutes
         """
-        return self.obj.time_stats["total_time_spent"] / 60
+        if (time_spend := self._get_from_time_stats("total_time_spent")) is not None:
+            return time_spend / 60
+        else:
+            logger.warning("Time spend is None")
+            return None
 
     @property
     def assignees(self) -> List[str]:
