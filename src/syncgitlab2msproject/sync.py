@@ -133,12 +133,14 @@ def update_task_with_issue_data(
             if issue.due_date is not None:
                 task.deadline = issue.due_date
             if not task.has_children:
-                task.work = int(issue.time_estimated)
+                if (estimated := issue.time_estimated) is not None:
+                    task.work = int(estimated)
             # Update duration in case it seems to be default
             if task.duration == DEFAULT_DURATION and task.estimated:
                 if task.work > 0:
                     task.duration = task.work
-            task.actual_work = issue.time_spent_total
+            if (time_spend := issue.time_spent_total) is not None:
+                task.actual_work = time_spend
             if issue.has_tasks or task.percent_complete == 0:
                 task.percent_complete = issue.percentage_tasks_done
             task.hyperlink_name = "Open in Gitlab"
