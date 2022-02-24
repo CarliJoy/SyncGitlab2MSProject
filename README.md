@@ -21,19 +21,19 @@ Currently only Information from Gitlab Issues are inserted and updated within th
 Project File. Changes in synchronised fields will be overwritten.
 
 The following MS Project attributes are synced (overwritten) from gitlab:
-  - Name
-  - Notes (from Description)
-  - Deadline (from Due Date)
-  - Work (from Time Estimated)
-  - Actual Work (from Time Spent)
+  - Name (from title)
+  - Notes (from description) removed
+  - Deadline (from due_date)
+  - Work (from time_estimate)
+  - Actual Work (from total_time_spent)
+  - Actual Start (from created_at)
+  - Actual Finish (from closed_at)
   - Percent Complete (if Tasks given for issue, otherwise only 0% and 100% [for closed])
-  - Text28 (the list of labels)
-  - Text29 (the URL to gitlab issue)
+  - Text28 (list of labels)
+  - Text29 (URL to gitlab issue)
   - Text30 (the reference to the issue is stored there)
   - Hyperlink (link/URL to gitlab issue)
-
-Not yet implemented but planned:
-  - Resources (from Assigned)
+  - ResourceNames (from Assigned)
 
 Moved issues will be handled if the group selected and the issue was moved within the
 group. Problem is that accessing issues only by ID is just allowed for admins.
@@ -42,7 +42,7 @@ group. Problem is that accessing issues only by ID is just allowed for admins.
 This project runs only in an Windows Environment with Microsoft Project installed.
 
 **Please note:** This Script has been tested only mit Microsoft Project 2016.
-It cloud be, that some of the API has changed in newer versions.
+It could be, that some of the API has changed in newer versions.
 If you run into any troubles with a new version, please open an
 [Issue](https://github.com/CarliJoy/SyncGitlab2MSProject/issues/new).
 

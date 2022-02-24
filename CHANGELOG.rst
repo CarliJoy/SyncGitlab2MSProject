@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Version 0.0.7
+=============
+- Removed Notes
+- Add Actual Start from gitlab created_at
+- Add option for ignoring given project id within group
+- Replaced Hyperlinkname with gitlab full reference
+- Access Gitlab with ssl_verify set to false
+
 Version 0.0.6
 =============
 - Add ``--ignore-label`` option :issue:`3`
