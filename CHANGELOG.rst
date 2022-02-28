@@ -5,6 +5,7 @@ Changelog
 Version 0.0.7
 =============
 - Removed Notes
+- Add ResourceNames from assignees
 - Add Actual Start from gitlab created_at
 - Add option for ignoring given project id within group
 - Replaced Hyperlinkname with gitlab full reference
