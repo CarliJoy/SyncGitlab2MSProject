@@ -176,7 +176,7 @@ class IssueFinder:
         # We also try to sync according to the weburl but only in a second step
         self.web_url_to_issue: Dict[WebURL, Issue] = {}
         for issue in issues:
-            """ Set up all references to locate later on"""
+            """Set up all references to locate later on"""
             ref_id = get_issue_ref_id(issue)
             if ref_id in self.ref_id_to_issue:
                 raise IssueReferenceDuplicated(
