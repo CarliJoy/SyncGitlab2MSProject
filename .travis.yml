@@ -15,9 +15,8 @@ virtualenv:
   system_site_packages: false
 install:
 - pip install --upgrade pip setuptools wheel
-- pip install --upgrade pre-commit mypy
+- pip install --upgrade mypy types-python-dateutil types-setuptools types-requests
 script:
-- pre-commit run --all-files
 - mypy src/
 deploy:
   provider: pypi
