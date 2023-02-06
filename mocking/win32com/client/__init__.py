@@ -78,7 +78,6 @@ class COMObject_MSProject_Application:
 
     @property
     def Projects(self) -> Iterable[MSProject_Project]:
-
         return []
 
 
