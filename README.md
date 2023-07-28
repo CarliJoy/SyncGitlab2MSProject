@@ -11,6 +11,11 @@
 [![Documentation Status](https://readthedocs.org/projects/syncgitlab2msproject/badge/?version=latest)](https://syncgitlab2msproject.readthedocs.io/en/latest/?badge=latest)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/CarliJoy/SyncGitlab2MSProject.svg)](http://isitmaintained.com/project/CarliJoy/SyncGitlab2MSProject)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/CarliJoy/SyncGitlab2MSProject.svg)](http://isitmaintained.com/project/CarliJoy/SyncGitlab2MSProject)
+
+# Help wanted
+
+I don't own Microsoft Project anymore. So if there is anybody willing to take up the development/maintance, just open an issue.
+
 # SyncGitlab2MSProject
 
 Sync Gitlab Issues into a Microsoft Project File.
