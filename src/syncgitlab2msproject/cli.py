@@ -28,6 +28,7 @@ from syncgitlab2msproject.sync import sync_gitlab_issues_to_ms_project
 
 _logger = logging.getLogger(f"{__package__}.{__name__}")
 
+Ignore_project_id = 0
 
 def parse_args(args):
     """Parse command line parameters
@@ -60,15 +61,25 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action="store_const",
         const=logging.DEBUG,
+        default="-vv",
     )
 
     parser.add_argument(
         "--ignore-label",
-        "-i",
+        "-il",
         dest="ignore_label",
         help="Ignore Gitlab Issue with a match to the label",
         default="",
         type=str,
+    )
+
+    parser.add_argument(
+        "--ignore-project",
+        "-ip",
+        dest="ignore_project",
+        help="Ignore Gitlab Issue with a match to the projec id",
+        default=0,
+        type=int,
     )
 
     parser.add_argument(
@@ -96,6 +107,7 @@ def parse_args(args):
         dest="gitlab_token",
         help="Gitlab personal access token",
         default=None,
+        type=str,
     )
 
     parser.add_argument(
@@ -142,6 +154,7 @@ def label_convert(label_string: str) -> str:
 
 def has_not_label(issue: Issue, label: str) -> bool:
     """
+    Give true if to include the issue as it has no ignored project
     Give true if to include the issue as it has no ignored label
 
     Args:
@@ -150,13 +163,16 @@ def has_not_label(issue: Issue, label: str) -> bool:
 
     Returns: True if to include the label
     """
+    global Ignore_project_id
+    if issue.project_id == Ignore_project_id:
+        return False
+
     if not label:
         return True
     for _label in issue.labels:
         if label_convert(_label) == label_convert(label):
             return False
     return True
-
 
 def filter_by_labels(issues: List[Issue], label: str) -> List[Issue]:
     """
@@ -186,6 +202,7 @@ def main(args):
     Args:
       args ([str]): command line parameter list
     """
+    global Ignore_project_id
     args = parse_args(args)
     setup_logging(args.loglevel)
     ms_project_file = Path(args.project_file)
@@ -196,6 +213,7 @@ def main(args):
         exit(128)
     _logger.debug("Starting loading issues")
 
+    Ignore_project_id = args.ignore_project
     gitlab = get_gitlab_class(args.gitlab_url, args.gitlab_token)
 
     if args.gitlab_resource_type == "project":

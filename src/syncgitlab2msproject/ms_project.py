@@ -267,6 +267,15 @@ class Task:
         self._set_task_val("Notes", value)
 
     @property
+    def resource_names(self) -> str:
+        return self._get_task().ResourceNames
+
+    @notes.setter
+    def resource_names(self, value: str):
+        self._set_task_val("ResourceNames", value)
+
+
+    @property
     def duration(self) -> Optional[int]:
         """Gets  the duration (in minutes) of a task.
         Read-only for summary tasks. Read/write Variant."""

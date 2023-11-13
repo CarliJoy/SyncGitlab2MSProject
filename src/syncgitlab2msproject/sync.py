@@ -129,7 +129,7 @@ def update_task_with_issue_data(
             type_setter = task_type_setter(issue)
             type_setter.set_task_type_before_sync(task, is_add)
             task.name = issue.title
-            task.notes = issue.description
+            #task.notes = issue.description
             if issue.due_date is not None:
                 task.deadline = issue.due_date
             if not task.has_children:
@@ -143,10 +143,13 @@ def update_task_with_issue_data(
                 task.actual_work = time_spend
             if issue.has_tasks or task.percent_complete == 0:
                 task.percent_complete = issue.percentage_tasks_done
-            task.hyperlink_name = "Open in Gitlab"
+            task.hyperlink_name = issue.full_ref
             task.hyperlink_address = issue.web_url
             task.text29 = issue.web_url
             task.text28 = "; ".join([f'"{label}"' for label in issue.labels])
+            task.actual_start = issue.created_at
+            if len(issue.assignees):
+                task.resource_names = issue.assignees[0]
             if issue.is_closed:
                 task.actual_finish = issue.closed_at
             type_setter.set_task_type_after_sync(task)

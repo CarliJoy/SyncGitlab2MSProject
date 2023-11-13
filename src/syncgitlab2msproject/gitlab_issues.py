@@ -170,6 +170,12 @@ class Issue:
         return None
 
     @property
+    def created_at(self) -> Optional[datetime]:
+        if (val := self.obj.created_at) is not None:
+            return dateutil.parser.parse(val)
+        return None
+
+    @property
     def due_date(self) -> Optional[datetime]:
         if (val := self.obj.due_date) is not None:
             return dateutil.parser.parse(val)
@@ -186,7 +192,7 @@ class Issue:
         Somehow the python-gitlab API seems to be not 100% fixed,
         see issue #9
 
-        :param key: key to query from time state
+        :param key: key to query from time stats
         :return: the value if existing or none
         """
         query_dict: Dict[str, float]
@@ -235,12 +241,18 @@ class Issue:
         return self.obj.labels
 
     @property
+    def full_ref(self) -> str:
+        """
+        give the full reference through which the issue can be accessed
+        """
+        return self.obj.attributes['references']['full']
+
+    @property
     def web_url(self) -> str:
         """
         give the url from which the issue can be accessed
         """
         return self.obj.web_url
-
 
 @lru_cache(10)
 def get_group_id_from_gitlab_project(project: Project) -> Optional[int]:
@@ -266,9 +278,9 @@ def get_group_id_from_gitlab_project(project: Project) -> Optional[int]:
 
 def get_gitlab_class(server: str, personal_token: Optional[str] = None) -> Gitlab:
     if personal_token is None:
-        return Gitlab(server)
+        return Gitlab(server, ssl_verify=False)
     else:
-        return Gitlab(server, private_token=personal_token)
+        return Gitlab(server, private_token=personal_token, ssl_verify=False)
 
 
 def get_group_issues(gitlab: Gitlab, group_id: int) -> List[Issue]:
