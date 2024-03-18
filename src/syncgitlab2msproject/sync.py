@@ -198,12 +198,10 @@ class IssueFinder:
     # Overload to make mypy aware of the fact that only None is given
     # once the id is none
     @overload
-    def by_ref_id(self, ref_id: IssueRef) -> Issue:
-        ...
+    def by_ref_id(self, ref_id: IssueRef) -> Issue: ...
 
     @overload
-    def by_ref_id(self, ref_id: None) -> None:
-        ...
+    def by_ref_id(self, ref_id: None) -> None: ...
 
     def by_ref_id(self, ref_id: Optional[IssueRef]) -> Optional[Issue]:
         """
